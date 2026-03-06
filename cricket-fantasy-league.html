@@ -117,6 +117,125 @@ max-height:400px;
 overflow-y:auto;
 }
 
+:root {
+    --primary: #1a237e;
+    --accent: #ffd700;
+    --danger: #d32f2f;
+    --success: #388e3c;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+}
+
+/* Modal Box */
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 12px;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+    animation: slideIn 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh; /* Limits height */
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Header */
+.modal-header {
+    padding: 20px;
+    background: var(--primary);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 { margin: 0; font-size: 1.2rem; }
+
+/* Body (Scrollable) */
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    background: #f8f9fa;
+}
+
+.rules-section { margin-bottom: 25px; }
+.rules-section h3 { 
+    border-bottom: 2px solid var(--primary); 
+    padding-bottom: 5px; 
+    color: var(--primary);
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: white;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+th { background: #f1f1f1; }
+.sub-header { background: #e3f2fd; font-weight: bold; }
+.neg { color: var(--danger); font-weight: bold; }
+.multiplier { background: #fff9c4; padding: 10px; border-radius: 8px; border: 1px dashed #fbc02d; }
+
+/* Buttons */
+.close-btn { font-size: 28px; cursor: pointer; }
+.btn-points { padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; }
+.btn-close { padding: 10px 25px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer; }
+.modal-footer { padding: 15px; border-top: 1px solid #eee; text-align: right; }
+
+/* Update these specific sections in your CSS */
+
+.modal-content {
+    background-color: #fff;
+    color: #1e293b; /* Add this: Darker text for the light background */
+    /* ... rest of your code ... */
+}
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    color: #334155; /* Add this: Ensures all body text is readable */
+}
+
+/* Ensure table text isn't inheriting the light gray */
+.modal-body table td, 
+.modal-body table th {
+    color: #1e293b;
+}
+
+/* Make the sub-headers darker for better visibility */
+.sub-header { 
+    background: #e3f2fd; 
+    color: #1a237e; /* Dark Blue */
+    font-weight: bold; 
+}
 @media(max-width:800px){
   .leaderboard-grid{
     grid-template-columns:1fr;
@@ -137,7 +256,109 @@ overflow-y:auto;
       <div id="page-title">Fantasy Cricket</div>
       <div id="page-sub" style="display:none"></div>
     </div>
-    <button class="btn btn-ghost" onclick="showPoints()">ℹ</button>
+    <button onclick="openModal()" class="btn-points">View Scoring Rules</button>
+
+<div id="rulesModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Cricket Fantasy Scoring Rules</h2>
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+        </div>
+        
+        <div class="modal-body">
+            <section class="rules-section">
+                <h3>🏏 Batting Rules</h3>
+                <table>
+                    <thead>
+                        <tr><th>Action</th><th>Points</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Run Scored</td><td>+1</td></tr>
+                        <tr><td>Boundary (Four)</td><td>+1</td></tr>
+                        <tr><td>Six</td><td>+2</td></tr>
+                        <tr><td>Dismissal as Not Out</td><td>+10</td></tr>
+                        <tr class="sub-header"><td colspan="2">Batting Milestones</td></tr>
+                        <tr><td>25 / 50 / 75 Runs</td><td>+25 / 50 / 75</td></tr>
+                        <tr><td>100 / 150 / 200 Runs</td><td>+100 / 150 / 200</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>Strike Rate Bonus <small>(Min. 20 runs or 10 balls)</small></h4>
+                <table>
+                    <tbody>
+                        <tr><td>&lt; 50 SR</td><td class="neg">-60</td></tr>
+                        <tr><td>50 - 74.9 SR</td><td class="neg">-40</td></tr>
+                        <tr><td>75 - 99.9 SR</td><td class="neg">-20</td></tr>
+                        <tr><td>100 - 124.9 SR</td><td class="neg">-10</td></tr>
+                        <tr><td>125 - 150 SR</td><td>0</td></tr>
+                        <tr><td>&gt; 150 SR</td><td>+10</td></tr>
+                        <tr><td>&gt; 200 / 300 SR</td><td>+40 / +80</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="rules-section">
+                <h3>⚾ Bowling Rules</h3>
+                <table>
+                    <thead>
+                        <tr><th>Action</th><th>Points</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Wicket (Excl. Run Out)</td><td>+25</td></tr>
+                        <tr><td>Bonus: Bowled / LBW</td><td>+10</td></tr>
+                        <tr><td>Dot Ball</td><td>+1</td></tr>
+                        <tr><td>Maiden Over</td><td>+40</td></tr>
+                        <tr><td>Wide / No Ball</td><td class="neg">-2</td></tr>
+                        <tr class="sub-header"><td colspan="2">Wicket Hauls</td></tr>
+                        <tr><td>3 / 4 / 5 Wickets</td><td>+50 / 75 / 100</td></tr>
+                        <tr><td>6 / 7 / 8 Wickets</td><td>+125 / 150 / 175</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>Economy Rate <small>(Min. 2 overs bowled)</small></h4>
+                <table>
+                    <tbody>
+                        <tr><td>Below 1.00</td><td>+120</td></tr>
+                        <tr><td>1.00 - 3.99</td><td>+40</td></tr>
+                        <tr><td>8.00 - 10.00</td><td>0</td></tr>
+                        <tr><td>Above 12.00</td><td class="neg">-20</td></tr>
+                        <tr><td>Above 16.00</td><td class="neg">-60</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="rules-section">
+                <h3>🧤 Fielding & Bonuses</h3>
+                <table>
+                    <tbody>
+                        <tr><td>Catch / Stumping / Direct Run Out</td><td>+10</td></tr>
+                        <tr><td>Hat-trick / Man of the Match</td><td>+100</td></tr>
+                        <tr><td>6 Sixes in an Over</td><td>+100</td></tr>
+                        <tr><td>6 Fours in an Over</td><td>+50</td></tr>
+                    </tbody>
+                </table>
+                
+                <h4>Tournament Awards</h4>
+                <table>
+                    <tbody>
+                        <tr><td>Orange / Purple Cap</td><td>+200</td></tr>
+                        <tr><td>MVP / Emerging Player</td><td>+200</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="rules-section multiplier">
+                <h3>⭐ Multipliers</h3>
+                <p><strong>Captain:</strong> 2x Points</p>
+                <p><strong>Vice-Captain:</strong> 1.5x Points</p>
+            </section>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-close" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+</div>
     <div id="topbar-right">
       <span id="api-badge" class="badge" style="display:none"></span>
       <button id="logout-btn" class="btn btn-ghost" onclick="logout()" style="padding:6px 14px;font-size:12px;display:none">Logout</button>
@@ -899,41 +1120,23 @@ function wizNext() {
   goPage(hasSugg ? 'resolve' : 'preview');
 }
 
-function showPoints(){
+const modal = document.getElementById("rulesModal");
 
-alert(`
-BATTTING
-Run = 1
-Four = 1
-Six = 2
-Not Out = 10
+function openModal() {
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden"; // Prevent background scroll
+}
 
-Strike Rate Bonus
-<50 = -60
-<75 = -40
-<100 = -20
->150 = +10
->175 = +20
->200 = +40
->250 = +60
->300 = +80
+function closeModal() {
+    modal.style.display = "none";
+    document.body.style.overflow = "auto"; // Restore scroll
+}
 
-Bowling
-Wicket = 25
-Bowled/LBW = 10
-Dot ball = 1
-Wide/No ball = -2
-
-Economy Bonus
-<1 = +120
-<2 = +80
-<4 = +40
-<6 = +20
-
-Captain = 2x
-Vice Captain = 1.5x
-`);
-
+// Close if user clicks outside the box
+window.onclick = function(event) {
+    if (event.target == modal) {
+        closeModal();
+    }
 }
 // ═══════════════════════════════════════════════════
 // FUZZY NAME MATCHING
