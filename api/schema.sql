@@ -32,6 +32,9 @@ CREATE TABLE IF NOT EXISTS players (
   fielding_points INT DEFAULT 0,
   match_points JSON DEFAULT NULL,
   is_injured TINYINT(1) DEFAULT 0,
+  country VARCHAR(255) DEFAULT NULL,
+  country_flag_url VARCHAR(512) DEFAULT NULL,
+  player_info JSON DEFAULT NULL,
   FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

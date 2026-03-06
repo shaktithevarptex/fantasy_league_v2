@@ -45,6 +45,13 @@ try{
 
         // include country if present
         $p['country'] = isset($p['country']) ? $p['country'] : '';
+        $p['countryFlagUrl'] = isset($p['country_flag_url']) ? $p['country_flag_url'] : (isset($p['countryFlagUrl']) ? $p['countryFlagUrl'] : '');
+        if(isset($p['player_info']) && $p['player_info'] !== null){
+          $p['playerInfo'] = json_decode($p['player_info'], true);
+        } else {
+          $p['playerInfo'] = new stdClass();
+        }
+        unset($p['player_info']); unset($p['country_flag_url']);
       }
       $tm['players'] = $tm_players;
     }
