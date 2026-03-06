@@ -49,6 +49,24 @@ try{
       $tm['players'] = $tm_players;
     }
     $t['teams'] = $teams;
+    // load matches for this tournament
+    $stmtM = $pdo->prepare('SELECT * FROM matches WHERE tournament_id = ? ORDER BY id DESC');
+    $stmtM->execute([$t['id']]);
+    $matches = $stmtM->fetchAll();
+    foreach($matches as &$m){
+      if(isset($m['team_info']) && $m['team_info'] !== null){
+        $m['teamInfo'] = json_decode($m['team_info'], true);
+      } else { $m['teamInfo'] = []; }
+      // map columns to expected names
+      $m['id'] = isset($m['external_id']) && $m['external_id'] ? $m['external_id'] : (isset($m['id']) ? (string)$m['id'] : null);
+      if(isset($m['created_at'])) $m['createdAt'] = $m['created_at'];
+      $m['date'] = isset($m['date']) ? $m['date'] : null;
+      $m['venue'] = isset($m['venue']) ? $m['venue'] : null;
+      $m['status'] = isset($m['status']) ? $m['status'] : null;
+      $m['result'] = isset($m['result']) ? $m['result'] : null;
+      unset($m['team_info']); unset($m['external_id']); unset($m['created_at']);
+    }
+    $t['matches'] = $matches;
   }
   echo json_encode(['status'=>'success','data'=>$tournaments]);
 } catch(Exception $e){

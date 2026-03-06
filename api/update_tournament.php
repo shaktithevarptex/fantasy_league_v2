@@ -28,6 +28,16 @@ try{
       $stmt->execute([$teamId,$p['name'],$p['originalName'] ?? $p['name'],$p['price'] ?? 0,$p['totalPoints'] ?? 0,$p['battingPoints'] ?? 0,$p['bowlingPoints'] ?? 0,$p['fieldingPoints'] ?? 0,$mp,isset($p['isInjured'])?($p['isInjured']?1:0):0]);
     }
   }
+  // handle matches: delete existing matches for tournament, re-insert incoming matches
+  if(isset($body['matches']) && is_array($body['matches'])){
+    $pdo->prepare('DELETE FROM matches WHERE tournament_id = ?')->execute([$body['id']]);
+    $stmtM = $pdo->prepare('INSERT INTO matches (tournament_id, external_id, name, date, venue, status, result, team_info, created_at) VALUES (?,?,?,?,?,?,?,?,?)');
+    foreach($body['matches'] as $m){
+      $teamInfoJson = isset($m['teamInfo']) ? json_encode($m['teamInfo']) : null;
+      $date = isset($m['date']) ? $m['date'] : null;
+      $stmtM->execute([$body['id'], $m['id'] ?? null, $m['name'] ?? null, $date, $m['venue'] ?? null, $m['status'] ?? null, $m['result'] ?? null, $teamInfoJson, time()]);
+    }
+  }
   $pdo->commit();
   echo json_encode(['status'=>'success']);
 } catch(Exception $e){ $pdo->rollBack(); http_response_code(500); echo json_encode(['status'=>'failure','reason'=>$e->getMessage()]); }
