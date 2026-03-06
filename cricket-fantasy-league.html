@@ -1,0 +1,2253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fantasy Cricket League</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#060b18;--surf:rgba(255,255,255,0.05);--surfh:rgba(255,255,255,0.09);--bdr:rgba(255,255,255,0.09);--bdra:rgba(56,189,248,0.35);--txt:#e2e8f0;--dim:#64748b;--acc:#38bdf8;--accd:rgba(56,189,248,0.13);--ok:#34d399;--warn:#fbbf24;--err:#f87171;--gold:#ffd700;--silver:#c0c0c0;--bronze:#cd7f32}
+html,body{min-height:100vh;background:var(--bg);font-family:'Trebuchet MS',system-ui,sans-serif;color:var(--txt)}
+::placeholder{color:rgba(100,116,139,0.55)!important}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.18);border-radius:4px}
+select option{background:#1e293b;color:#e2e8f0}
+input,select,button{font-family:inherit}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.4}}
+.fu{animation:fu .35s ease both}
+.pu{animation:pu 1.5s ease infinite}
+.page{display:none}.page.active{display:block}
+
+/* Topbar */
+#topbar{position:sticky;top:0;z-index:200;background:rgba(6,11,24,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr)}
+#topbar-inner{max-width:1080px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:14px;height:58px}
+#back-btn{background:none;border:none;color:var(--dim);cursor:pointer;font-size:22px;line-height:1;padding:4px 8px;border-radius:8px}
+#back-btn:hover{color:var(--txt)}
+#page-title{font-weight:900;font-size:15px;color:var(--txt);letter-spacing:.5px}
+#page-sub{font-size:11px;color:var(--dim);margin-top:1px}
+#topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+
+/* Layout */
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px}
+
+/* Cards */
+.card{background:var(--surf);backdrop-filter:blur(10px);border:1px solid var(--bdr);border-radius:14px;padding:20px}
+.card-hover{cursor:pointer;transition:background .18s}
+.card-hover:hover{background:var(--surfh)}
+
+/* Inputs */
+.inp{width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--bdr);border-radius:10px;padding:10px 14px;color:var(--txt);font-size:13px;outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--acc)}
+
+/* Buttons */
+.btn{border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;letter-spacing:.3px}
+.btn-primary{background:linear-gradient(135deg,#38bdf8,#3b82f6);color:#fff}
+.btn-success{background:linear-gradient(135deg,#34d399,#059669);color:#fff}
+.btn-danger{background:linear-gradient(135deg,#f87171,#dc2626);color:#fff}
+.btn-ghost{background:rgba(255,255,255,0.07);color:var(--dim);border:1px solid var(--bdr)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:not(:disabled):hover{filter:brightness(1.12);transform:translateY(-1px)}
+
+/* Badge */
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;white-space:nowrap}
+
+/* Label */
+.lbl{color:var(--dim);font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px}
+
+/* Grid */
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;background:rgba(255,255,255,0.04);border-radius:12px;padding:4px;margin-bottom:28px}
+.tab-btn{flex:1;padding:10px 6px;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .2s;background:transparent;color:var(--dim)}
+.tab-btn.active{background:linear-gradient(135deg,#38bdf8,#3b82f6);color:#fff}
+
+/* Drop zone */
+.dropzone{border:2px dashed var(--bdr);border-radius:16px;padding:50px 24px;text-align:center;cursor:pointer;transition:all .2s}
+.dropzone:hover,.dropzone.drag{border-color:var(--acc);background:var(--accd)}
+.dropzone input[type=file]{display:none}
+
+/* Team row */
+.team-row{display:flex;align-items:center;gap:16px;padding:18px 0;border-bottom:1px solid var(--bdr);cursor:pointer}
+.team-row:hover{background:rgba(255,255,255,0.02)}
+.player-row{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center}
+
+/* Login page */
+#login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 30% 60%,#0f1f3d,var(--bg) 60%);padding:20px}
+.orb{position:fixed;border-radius:50%;pointer-events:none}
+
+/* Scrollable log */
+.log-box{background:rgba(0,0,0,.4);border-radius:10px;padding:14px;font-family:monospace;font-size:12px;max-height:220px;overflow-y:auto}
+
+/* Flex helpers */
+.flex{display:flex}.flex-col{flex-direction:column}.gap-10{gap:10px}.gap-12{gap:12px}.gap-14{gap:14px}.gap-16{gap:16px}.items-center{align-items:center}.jc-between{justify-content:space-between}.flex-1{flex:1}
+.mb-8{margin-bottom:8px}.mb-12{margin-bottom:12px}.mb-16{margin-bottom:16px}.mb-20{margin-bottom:20px}.mb-24{margin-bottom:24px}.mb-28{margin-bottom:28px}.mt-10{margin-top:10px}.mt-20{margin-top:20px}
+.fw-800{font-weight:800}.fw-700{font-weight:700}.fw-600{font-weight:600}
+.fs-11{font-size:11px}.fs-12{font-size:12px}.fs-13{font-size:13px}.fs-15{font-size:15px}.fs-17{font-size:17px}.fs-22{font-size:22px}
+.txt-acc{color:var(--acc)}.txt-dim{color:var(--dim)}.txt-ok{color:var(--ok)}.txt-warn{color:var(--warn)}.txt-err{color:var(--err)}.txt-main{color:var(--txt)}
+.w100{width:100%}.ta-center{text-align:center}.ta-right{text-align:right}
+.alert{border-radius:10px;padding:12px 16px;font-size:13px}
+.alert-ok{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:var(--ok)}
+.alert-warn{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);color:var(--warn)}
+.alert-err{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(--err)}
+.alert-acc{background:var(--accd);border:1px solid var(--bdra);color:var(--acc)}
+
+/* Name resolve pills */
+.name-pill{border-radius:8px;padding:8px 16px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;border:1px solid var(--bdr);background:rgba(255,255,255,0.05);color:var(--txt)}
+.name-pill.selected{background:var(--accd);border-color:var(--acc);color:var(--acc)}
+.name-pill.keep-orig{color:var(--dim)}
+.name-pill.keep-orig.selected{background:rgba(248,113,113,.15);border-color:var(--err);color:var(--err)}
+
+/* Player tag */
+.ptag{display:inline-block;border-radius:6px;padding:3px 9px;font-size:11px;border:1px solid var(--bdr);background:rgba(255,255,255,0.06);color:var(--txt);margin:2px}
+.ptag.corrected{background:rgba(52,211,153,.15);border-color:var(--ok);color:var(--ok)}
+
+.sep{height:1px;background:var(--bdr);border:none;margin:0}
+
+.leaderboard-grid{
+  display:grid;
+  grid-template-columns: 1fr 2fr;
+  gap:18px;
+}
+
+#top-performers-list{
+max-height:400px;
+overflow-y:auto;
+}
+
+@media(max-width:800px){
+  .leaderboard-grid{
+    grid-template-columns:1fr;
+  }
+}
+/* Responsive */
+@media(max-width:600px){.grid-cards{grid-template-columns:1fr}.wrap{padding:16px}}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══════════════════════════════════════════════ -->
+<div id="topbar" style="display:none">
+  <div id="topbar-inner">
+    <button id="back-btn" onclick="navBack()" style="display:none">←</button>
+    <span style="font-size:22px">🏏</span>
+    <div>
+      <div id="page-title">Fantasy Cricket</div>
+      <div id="page-sub" style="display:none"></div>
+    </div>
+    <button class="btn btn-ghost" onclick="showPoints()">ℹ</button>
+    <div id="topbar-right">
+      <span id="api-badge" class="badge" style="display:none"></span>
+      <button id="logout-btn" class="btn btn-ghost" onclick="logout()" style="padding:6px 14px;font-size:12px;display:none">Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LOGIN ════════════════════════════════════════════════ -->
+<div id="page-login" class="page active">
+  <div id="login-wrap">
+    <!-- orbs -->
+    <div class="orb" style="width:200px;height:200px;background:radial-gradient(circle,#38bdf807,transparent 70%);left:5%;top:10%"></div>
+    <div class="orb" style="width:350px;height:350px;background:radial-gradient(circle,#3b82f607,transparent 70%);left:60%;top:40%"></div>
+    <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#38bdf807,transparent 70%);left:20%;top:60%"></div>
+
+    <div class="fu" style="width:100%;max-width:400px;position:relative;z-index:1">
+      <div class="ta-center mb-28" style="margin-bottom:36px">
+        <div style="font-size:56px;margin-bottom:10px">🏏</div>
+        <h1 style="font-size:26px;font-weight:900;color:var(--txt);letter-spacing:3px">FANTASY CRICKET</h1>
+        <div style="font-size:11px;color:var(--acc);letter-spacing:5px;margin-top:4px;font-weight:700">LEAGUE PLATFORM</div>
+      </div>
+
+      <div id="login-choose" class="flex flex-col gap-14">
+        <button class="btn btn-primary" style="padding:16px;font-size:15px;border-radius:14px" onclick="playerLogin()">👤 &nbsp; Player Login</button>
+        <button class="btn btn-ghost" style="padding:16px;font-size:15px;border-radius:14px" onclick="showAdminForm()">🔐 &nbsp; Admin Login</button>
+      </div>
+
+      <div id="login-form" style="display:none">
+        <div class="card fu">
+          <div class="lbl">🔐 Admin Login</div>
+          <div class="flex flex-col gap-12" style="margin-top:12px">
+            <input id="login-pass" class="inp" type="password" placeholder="Admin Password" onkeydown="if(event.key==='Enter')doAdminLogin()"/>
+            <div id="login-err" style="color:var(--err);font-size:12px;display:none"></div>
+            <div class="flex gap-10">
+              <button class="btn btn-primary flex-1" onclick="doAdminLogin()">Login →</button>
+              <button class="btn btn-ghost" onclick="backToChoose()">Back</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ USER HOME ═════════════════════════════════════════════ -->
+<div id="page-user-home" class="page">
+  <div class="wrap">
+    <div id="user-tournaments-grid" class="grid-cards fu"></div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN HOME ════════════════════════════════════════════ -->
+<div id="page-admin-home" class="page">
+  <div class="wrap">
+    <div class="flex items-center jc-between mb-28">
+      <h2 style="font-size:20px;font-weight:800">Tournaments</h2>
+      <button class="btn btn-primary" onclick="goNewTournament()">+ New Tournament</button>
+    </div>
+    <div id="admin-tournaments-grid" class="grid-cards fu"></div>
+  </div>
+</div>
+
+<!-- ═══ NEW TOURNAMENT WIZARD ═════════════════════════════════ -->
+<div id="page-new-tournament" class="page">
+  <div class="wrap">
+
+    <!-- Step pills -->
+    <div class="flex items-center gap-10 mb-28" style="flex-wrap:wrap">
+      <div class="badge" style="background:linear-gradient(135deg,#38bdf8,#3b82f6);color:#fff;padding:5px 16px;font-size:12px">1 Details</div>
+      <div style="width:20px;height:1px;background:var(--bdr)"></div>
+      <div class="badge" style="background:linear-gradient(135deg,#38bdf8,#3b82f6);color:#fff;padding:5px 16px;font-size:12px">2 Upload Excel</div>
+      <div style="width:20px;height:1px;background:var(--bdr)"></div>
+      <div class="badge" style="background:linear-gradient(135deg,#38bdf8,#3b82f6);color:#fff;padding:5px 16px;font-size:12px">3 Review</div>
+    </div>
+
+    <!-- Step 1: Details -->
+    <div class="card mb-20">
+      <div class="lbl">Step 1 — Tournament Details</div>
+      <div class="flex flex-col gap-12 mt-10">
+        <div>
+          <div class="fs-12 txt-dim mb-8">Tournament Name <span style="color:var(--err)">*</span></div>
+          <input id="wiz-name" class="inp" placeholder="e.g. IPL Fantasy 2025 — Office League"/>
+        </div>
+        <div>
+          <div class="fs-12 txt-dim mb-8">Series ID <span style="color:var(--err)">*</span> <span class="txt-dim fs-11">— from CricAPI series URL</span></div>
+          <input id="wiz-sid" class="inp" placeholder="e.g. 0cdf6736-ad9b-4e95-a647-5ee3a99c5510" required/>
+          <div class="fs-11 txt-dim" style="margin-top:6px">Find at: cricapi.com/product/series → copy the series ID from the URL</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div class="card mb-20" id="wiz-upload-card" style="border:2px dashed var(--bdra);background:rgba(56,189,248,0.03)">
+      <div class="lbl txt-acc">Step 2 — Upload Teams Excel Sheet</div>
+      <div id="wiz-upload-msg" class="alert alert-err mb-16" style="display:none;white-space:pre-line"></div>
+
+      <div class="dropzone" id="wiz-dropzone" onclick="document.getElementById('wiz-file').click()"
+        ondragover="event.preventDefault();this.classList.add('drag')"
+        ondragleave="this.classList.remove('drag')"
+        ondrop="event.preventDefault();this.classList.remove('drag');handleWizDrop(event)">
+        <div style="font-size:44px;margin-bottom:12px">📊</div>
+        <div class="fw-800 fs-17 txt-main mb-8">Drop your Excel file here</div>
+        <div class="txt-dim fs-13" style="line-height:1.8">
+          or <span class="txt-acc" style="text-decoration:underline">click to browse</span><br>
+          <span class="fs-11">Each <strong class="txt-main">sheet tab = one team</strong> · Each row = one player name</span>
+        </div>
+        <div class="flex gap-10" style="justify-content:center;margin-top:14px">
+          <span class="badge" style="background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.4);color:var(--acc)">xlsx</span>
+          <span class="badge" style="background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.4);color:var(--acc)">xls</span>
+          <span class="badge" style="background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.4);color:var(--acc)">csv</span>
+        </div>
+        <input type="file" id="wiz-file" accept=".xlsx,.xls,.csv" onchange="handleWizFile(this)"/>
+      </div>
+
+      <div class="flex gap-12 mt-10" style="margin-top:12px">
+        <div style="background:rgba(0,0,0,.25);border-radius:10px;padding:12px;flex:1">
+          <div style="color:var(--acc);font-weight:700;font-size:11px;margin-bottom:6px">✅ FORMAT A (recommended)</div>
+          <div class="txt-dim fs-12" style="line-height:1.8">Sheet tab name = Team<br>Column A = player names<br><code style="color:var(--warn);font-size:10px">Tab "Team Shakti" → Virat Kohli...</code></div>
+        </div>
+        <div style="background:rgba(0,0,0,.25);border-radius:10px;padding:12px;flex:1">
+          <div style="color:var(--ok);font-weight:700;font-size:11px;margin-bottom:6px">✅ FORMAT B</div>
+          <div class="txt-dim fs-12" style="line-height:1.8">Single sheet, 2 columns:<br><code style="color:var(--warn);font-size:10px">Team | Player</code><br>One row per player</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Parse success banner -->
+    <div id="wiz-parsed-banner" class="alert alert-ok mb-16" style="display:none"></div>
+
+    <div class="flex gap-12 items-center">
+      <button class="btn btn-ghost" onclick="goPage('admin-home')">Cancel</button>
+      <div id="wiz-next-hint" class="txt-dim fs-13" style="margin-left:8px">⬆️ Upload Excel above to continue</div>
+      <button id="wiz-next-btn" class="btn btn-success" onclick="wizNext()" style="display:none">Review Teams →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NAME RESOLUTION ═══════════════════════════════════════ -->
+<div id="page-resolve" class="page">
+  <div class="wrap">
+    <div class="alert alert-warn mb-24">
+      <div class="fw-700 fs-15">⚠️ Some player names need confirmation</div>
+      <div class="fs-12 mt-10">We found possible typos or uncommon spellings. Select the correct name or keep the original.</div>
+    </div>
+    <div id="resolve-items"></div>
+    <div class="flex gap-12" style="margin-top:16px">
+      <button id="resolve-confirm-btn" class="btn btn-success" onclick="resolveConfirm()" disabled>Confirm Names → Preview</button>
+      <button class="btn btn-ghost" onclick="resolveSkip()">Skip — keep all originals</button>
+    </div>
+    <div id="resolve-hint" class="txt-dim fs-12" style="margin-top:10px">Select an option for every name above.</div>
+  </div>
+</div>
+
+<!-- ═══ PREVIEW ═══════════════════════════════════════════════ -->
+<div id="page-preview" class="page">
+  <div class="wrap">
+    <div id="preview-summary" class="alert alert-acc mb-24 flex gap-20" style="flex-wrap:wrap"></div>
+    <div id="preview-teams" class="grid-cards mb-24"></div>
+    <div id="preview-no-name-warn" class="alert alert-err mb-16" style="display:none">⚠️ Go back and enter a tournament name first.</div>
+    <div class="flex gap-12">
+      <button id="preview-create-btn" class="btn btn-success" style="padding:12px 32px;font-size:15px" onclick="createTournament()">🎉 Create Tournament</button>
+      <button class="btn btn-ghost" onclick="goPage('new-tournament')">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOURNAMENT VIEW ════════════════════════════════════════ -->
+<div id="page-tournament" class="page">
+  <div class="wrap">
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-btn-leaderboard" onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
+      <button class="tab-btn" id="tab-btn-matches" onclick="switchTab('matches')">🏏 Matches</button>
+      <button class="tab-btn" id="tab-btn-manage" onclick="switchTab('manage')" style="display:none">⚙️ Manage</button>
+    </div>
+
+    <!-- Leaderboard -->
+    <div id="tab-leaderboard" class="fu">
+
+      <div class="leaderboard-grid">
+    
+        <div id="top-performers" class="card" style="border:1px solid rgba(251,191,36,.25);display:none">
+          <div class="lbl" style="color:var(--warn)">🌟 Top Performers</div>
+          <div id="top-performers-list" style="margin-top:12px"></div>
+        </div>
+    
+        <div class="card">
+          <div class="lbl">Team Standings</div>
+          <div id="standings-list"></div>
+        </div>
+    
+      </div>
+    
+    </div>
+
+    <!-- Matches -->
+    <div id="tab-matches" style="display:none" class="fu">
+      <div id="matches-content"></div>
+    </div>
+
+    <!-- Manage -->
+    <div id="tab-manage" style="display:none" class="fu">
+      <div class="flex gap-4 mb-24" style="background:rgba(255,255,255,0.04);border-radius:10px;padding:4px">
+        <button class="tab-btn active" id="sub-btn-upload" onclick="switchSubTab('upload')" style="flex:1">📤 Upload More Teams</button>
+        <button class="tab-btn" id="sub-btn-scores" onclick="switchSubTab('scores')" style="flex:1">🏏 Fetch Scores</button>
+        <button class="tab-btn" id="sub-btn-captain" onclick="switchSubTab('captain')" style="flex:1">⭐ Captain</button>
+        <button class="tab-btn" id="sub-btn-injury" onclick="switchSubTab('injury')" style="flex:1">🩹 Injury</button>
+      </div>
+      <div id="sub-upload"></div>
+      <div id="sub-scores" style="display:none"></div>
+      <div id="sub-captain" style="display:none"></div>
+      <div id="sub-injury" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+const ADMIN_PASS = "26";
+const API_KEY = "0685189e-95dc-4bc4-9f10-3ad78e854131";
+
+let state = {
+  user: null,       // "admin" | "user"
+  page: "login",
+  prevPage: null,
+  tournaments: [],
+  tId: null,        // current tournament id
+  // wizard
+  wiz: { tName:"", sid:"", parsedTeams:[], suggestions:{}, choices:{} }
+};
+
+// Try to load tournaments from API; fall back to localStorage if API unavailable
+async function loadTournamentsFromServer(){
+  try{
+    const res = await fetch('api/get_tournaments.php');
+    const j = await res.json();
+    if(j && j.status === 'success' && Array.isArray(j.data)){
+      state.tournaments = j.data.map(t => ({
+        ...t,
+        id: String(t.id),
+        teams: (t.teams||[]).map(tm => ({ ...tm, id: String(tm.id), players: (tm.players||[]).map(p=>({ ...p, id: String(p.id) })) }))
+      }));
+      return;
+    }
+  } catch(e){ /* ignore and fallback */ }
+
+  const saved = localStorage.getItem("fantasy_tournaments");
+  if(saved){ state.tournaments = JSON.parse(saved); }
+}
+
+// API helpers for saving/updating/deleting tournaments
+async function apiSaveTournament(tournament){
+  const res = await fetch('api/save_tournament.php',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(tournament) });
+  return res.json();
+}
+
+async function apiUpdateTournament(tournament){
+  const res = await fetch('api/update_tournament.php',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(tournament) });
+  return res.json();
+}
+
+async function apiDeleteTournament(id){
+  const res = await fetch('api/delete_tournament.php',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id}) });
+  return res.json();
+}
+const norm = s => (s||"").toLowerCase().replace(/[^a-z]/g,"");
+
+function renderSubCaptain(t){
+
+const el=document.getElementById("sub-captain");
+
+const players=t.teams.flatMap(tm=>
+  tm.players.map(p=>({...p,team:tm.name,teamId:tm.id}))
+);
+
+el.innerHTML=`
+<div class="card">
+
+<div class="lbl">⭐ Weekly Captain Selection</div>
+
+<div class="flex gap-12 mt-10">
+
+<select class="inp" id="cap-team" onchange="updateCaptainPlayers()">
+<option value="">Select Team</option>
+${t.teams.map(tm=>`
+<option value="${tm.id}">
+${tm.name}
+</option>`).join("")}
+</select>
+
+<select class="inp" id="cap-player"></select>
+
+<select class="inp" id="vc-player"></select>
+
+<button class="btn btn-success" onclick="saveCaptain()">
+Save
+</button>
+
+</div>
+
+</div>
+`;
+
+}
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+function goPage(page, opts={}) {
+  // hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-'+page);
+  if(el){ el.classList.add('active'); el.classList.remove('fu'); void el.offsetWidth; el.classList.add('fu'); }
+
+  const topbar = document.getElementById('topbar');
+  const backBtn = document.getElementById('back-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+  const apiBadge = document.getElementById('api-badge');
+  const pageTitleEl = document.getElementById('page-title');
+  const pageSubEl = document.getElementById('page-sub');
+
+  if(page === 'login'){
+    topbar.style.display = 'none';
+  } else {
+    topbar.style.display = 'block';
+    logoutBtn.style.display = 'block';
+    apiBadge.style.display = state.user==='admin' ? 'inline-block' : 'none';
+    updateApiBadge();
+  }
+
+  // Back button logic
+  const backMap = {
+    'user-home': null,
+    'admin-home': null,
+    'new-tournament': 'admin-home',
+    'resolve': 'new-tournament',
+    'preview': 'new-tournament',
+    'tournament': state.user==='admin' ? 'admin-home' : 'user-home',
+  };
+  const backTarget = backMap[page];
+  backBtn.style.display = backTarget ? 'block' : 'none';
+  backBtn.onclick = () => goPage(backTarget);
+
+  // Titles
+  const titles = {
+    'user-home': ['Tournaments', null],
+    'admin-home': ['Admin Dashboard', null],
+    'new-tournament': ['New Tournament', null],
+    'resolve': ['Verify Player Names', `${Object.keys(state.wiz.suggestions).length} name(s) need confirmation`],
+    'preview': ['Review & Create', `${state.wiz.parsedTeams.length} teams · ${state.wiz.parsedTeams.reduce((s,t)=>s+t.players.length,0)} players`],
+    'tournament': [getTournament()?.name||'', `${getTournament()?.startDate||''} · ${(getTournament()?.teams||[]).length} teams`],
+  };
+  const [title, sub] = titles[page] || ['', null];
+  pageTitleEl.textContent = title;
+  pageSubEl.textContent = sub || '';
+  pageSubEl.style.display = sub ? 'block' : 'none';
+
+  state.page = page;
+
+  // Render page content
+  renderPage(page);
+}
+
+function navBack() {
+  const backMap = {
+    'new-tournament': 'admin-home',
+    'resolve': 'new-tournament',
+    'preview': 'new-tournament',
+    'tournament': state.user==='admin' ? 'admin-home' : 'user-home',
+  };
+  const target = backMap[state.page];
+  if(target) goPage(target);
+}
+
+function logout() {
+  state.user = null;
+  goPage('login');
+}
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
+function getTournament() {
+  return state.tournaments.find(t => t.id === state.tId);
+}
+
+function updateTournament(updated) {
+
+  state.tournaments = state.tournaments.map(t =>
+    t.id === updated.id ? updated : t
+  );
+
+  // Try to persist to server, fallback to localStorage
+  (async()=>{
+    try{
+      await apiUpdateTournament(updated);
+    }catch(e){
+      try{ localStorage.setItem("fantasy_tournaments", JSON.stringify(state.tournaments)); }catch(err){}
+    }
+  })();
+
+  // re-render UI
+  if(state.page === 'tournament') {
+    renderTournamentContent();
+  }
+
+}
+
+function updateApiBadge() {
+  const badge = document.getElementById('api-badge');
+  const hits = getHits();
+  badge.textContent = `API ${hits}/100`;
+  badge.style.background = hits>=90 ? 'rgba(248,113,113,.2)' : 'rgba(56,189,248,.15)';
+  badge.style.border = `1px solid ${hits>=90?'rgba(248,113,113,.4)':'rgba(56,189,248,.4)'}`;
+  badge.style.color = hits>=90 ? '#f87171' : '#38bdf8';
+}
+
+function getHits(){
+  const d = JSON.parse(localStorage.getItem("api_hits") || "{}");
+  if(d.date === new Date().toDateString()) return d.hits || 0;
+  return 0;
+}
+
+function bumpHits(n){
+  const today = new Date().toDateString();
+  const current = getHits();
+
+  const data = {
+    date: today,
+    hits: current + n
+  };
+
+  localStorage.setItem("api_hits", JSON.stringify(data));
+  updateApiBadge();
+}
+function makeId(prefix){ return prefix+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,6); }
+
+// ═══════════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════════
+function playerLogin() {
+  state.user = 'user';
+  goPage('user-home');
+}
+
+function showAdminForm() {
+  document.getElementById('login-choose').style.display = 'none';
+  document.getElementById('login-form').style.display = 'block';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-err').style.display = 'none';
+  setTimeout(()=>document.getElementById('login-pass').focus(), 50);
+}
+
+function backToChoose() {
+  document.getElementById('login-choose').style.display = 'flex';
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('login-pass').value = '';
+}
+
+function doAdminLogin() {
+  const errEl = document.getElementById('login-err');
+  const pass = document.getElementById('login-pass').value;
+  if(pass !== ADMIN_PASS){ errEl.textContent='Wrong password'; errEl.style.display='block'; return; }
+  state.user = 'admin';
+  goPage('admin-home');
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER HELPERS
+// ═══════════════════════════════════════════════════
+function renderPage(page) {
+  if(page==='user-home') renderUserHome();
+  else if(page==='admin-home') renderAdminHome();
+  else if(page==='new-tournament') renderNewTournament();
+  else if(page==='resolve') renderResolve();
+  else if(page==='preview') renderPreview();
+  else if(page==='tournament') renderTournamentContent();
+}
+
+function tournamentCard(t, onClick) {
+  const totalPlayers = (t.teams||[]).reduce((s,x)=>s+(x.players?.length||0),0);
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.style.cssText = 'border:1px solid var(--bdra);cursor:pointer;transition:background .18s';
+  el.onmouseenter = () => el.style.background = 'var(--surfh)';
+  el.onmouseleave = () => el.style.background = '';
+  el.onclick = onClick;
+  el.innerHTML = `
+<div style="display:flex;justify-content:space-between;margin-bottom:12px">
+  <span class="badge" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.35);color:var(--ok)">
+    ${escHtml(t.status||'active')}
+  </span>
+  <span class="txt-dim fs-11">${(t.teams||[]).length} teams</span>
+</div>
+
+<div class="fw-800 txt-main fs-17 mb-8">${escHtml(t.name)}</div>
+
+<div class="txt-dim fs-12">
+${(t.matches||[]).length} matches · ${totalPlayers} players
+</div>
+
+${state.user==='admin' ? `
+<button class="btn btn-danger mt-10"
+onclick="event.stopPropagation();deleteTournament('${t.id}')">
+Delete
+</button>
+` : ''}
+`;
+  return el;
+}
+
+function deleteTournament(id){
+
+if(!confirm("Delete this tournament?")) return;
+
+// Try server delete first, fallback locally
+(async()=>{
+  try{
+    const res = await apiDeleteTournament(id);
+    if(res && res.status === 'success'){
+      state.tournaments = state.tournaments.filter(t => t.id !== id);
+      renderAdminHome();
+      return;
+    }
+  } catch(e){}
+  // fallback
+  state.tournaments = state.tournaments.filter(t => t.id !== id);
+  try{ localStorage.setItem("fantasy_tournaments", JSON.stringify(state.tournaments)); }catch(e){}
+  renderAdminHome();
+})();
+
+}
+// ── User Home ─────────────────────────────────────
+function renderUserHome() {
+  const grid = document.getElementById('user-tournaments-grid');
+  grid.innerHTML = '';
+  if(!state.tournaments.length) {
+    grid.innerHTML = '<div class="ta-center txt-dim" style="padding:80px"><div style="font-size:48px;margin-bottom:16px">🏆</div>No tournaments yet. Check back soon!</div>';
+    return;
+  }
+  state.tournaments.forEach(t => {
+    grid.appendChild(tournamentCard(t, () => openTournament(t.id)));
+  });
+}
+
+// ── Admin Home ────────────────────────────────────
+function renderAdminHome() {
+  const grid = document.getElementById('admin-tournaments-grid');
+  grid.innerHTML = '';
+  if(!state.tournaments.length) {
+    grid.innerHTML = `<div class="ta-center" style="padding:60px;grid-column:1/-1">
+      <div style="font-size:52px;margin-bottom:16px">🏆</div>
+      <div class="fw-800 txt-main" style="font-size:20px;margin-bottom:8px">No tournaments yet</div>
+      <div class="txt-dim mb-24">Create one and upload your team Excel sheet</div>
+      <button class="btn btn-primary" style="padding:14px 36px;font-size:15px" onclick="goNewTournament()">+ Create Tournament & Upload Teams</button>
+    </div>`;
+    return;
+  }
+  state.tournaments.forEach(t => {
+    grid.appendChild(tournamentCard(t, () => openTournament(t.id)));
+  });
+}
+
+function openTournament(tId) {
+  state.tId = tId;
+  currentTab = 'leaderboard';
+  goPage('tournament');
+}
+
+function goNewTournament() {
+  state.wiz = { tName:'', sid:'', parsedTeams:[], suggestions:{}, choices:{} };
+  goPage('new-tournament');
+}
+
+// ═══════════════════════════════════════════════════
+// WIZARD — NEW TOURNAMENT
+// ═══════════════════════════════════════════════════
+function renderNewTournament() {
+  document.getElementById('wiz-name').value = state.wiz.tName || '';
+  document.getElementById('wiz-sid').value = state.wiz.sid || '';
+  document.getElementById('wiz-upload-msg').style.display = 'none';
+  updateWizParsedBanner();
+}
+
+function updateWizParsedBanner() {
+  const banner = document.getElementById('wiz-parsed-banner');
+  const nextBtn = document.getElementById('wiz-next-btn');
+  const hint = document.getElementById('wiz-next-hint');
+  if(state.wiz.parsedTeams.length) {
+    const total = state.wiz.parsedTeams.reduce((s,t)=>s+t.players.length,0);
+    const owners = state.wiz.parsedTeams.map(t=>t.owner||t.name).join(', ');
+    banner.innerHTML = `✅ <strong>${state.wiz.parsedTeams.length} owner teams</strong> parsed · <strong>${total} players</strong> total<br><span style="font-size:11px;opacity:.8">Owners: ${escHtml(owners)}</span>`;
+    banner.style.display = 'block';
+    nextBtn.style.display = 'block';
+    hint.style.display = 'none';
+  } else {
+    banner.style.display = 'none';
+    nextBtn.style.display = 'none';
+    hint.style.display = 'block';
+  }
+}
+
+function handleWizFile(input) {
+  const file = input.files[0];
+  input.value = '';
+  if(file) parseExcel(file);
+}
+
+function handleWizDrop(event) {
+  const file = event.dataTransfer.files[0];
+  if(file) parseExcel(file);
+}
+
+function parseExcel(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  const msgEl = document.getElementById('wiz-upload-msg');
+  if(!['xlsx','xls','csv'].includes(ext)) {
+    msgEl.textContent = '❌ Upload .xlsx, .xls or .csv'; msgEl.style.display='block'; return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, {type:'binary'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+
+      const teams = parseAuctionSheet(rows);
+
+      if(!teams.length) {
+        msgEl.textContent = '❌ No teams found. Make sure the sheet follows the auction format (owner names in row 1, players below).';
+        msgEl.style.display='block'; return;
+      }
+
+      // API-based name validation (async, show results after)
+      msgEl.style.display='none';
+      state.wiz.parsedTeams = teams;
+      state.wiz.suggestions = {};
+      state.wiz.choices = {};
+      updateWizParsedBanner();
+
+      // Kick off async API name check in background
+      validateNamesViaAPI(teams).then(sugg => {
+        state.wiz.suggestions = sugg;
+        updateWizParsedBanner();
+      });
+
+    } catch(err) {
+      msgEl.textContent = '❌ Error: ' + err.message;
+      msgEl.style.display = 'block';
+    }
+  };
+  reader.readAsBinaryString(file);
+}
+
+// Parse auction-style sheet:
+// Row 0: [maybe_empty, Owner1, Price_header_or_empty, maybe_empty, Owner2, ...]
+// Row 1+: [maybe_empty, PlayerName, Price, maybe_empty, PlayerName, Price, ...]
+// IMPORTANT: Col A may or may not exist as a cell — XLSX sparse arrays
+// So we scan ALL columns (0 onwards) for owner names
+function parseAuctionSheet(rows) {
+  if(!rows.length) return [];
+
+  const isText  = v => { const s=String(v||'').trim(); return s.length>=2 && /[a-zA-Z]/.test(s) && !/^\d+(\.\d+)?$/.test(s); };
+  const isNum   = v => { const s=String(v||'').trim(); return s!=='' && !isNaN(parseFloat(s)); };
+  const clean   = v => String(v||'').trim();
+
+  // ── Step 1: Find the owner row ─────────────────────────────
+  // It's the FIRST row that has ≥2 text cells (owner names).
+  // Works regardless of whether col A exists or is blank.
+  let ownerRow = null, ownerRowIdx = 0;
+  for(let r = 0; r < Math.min(6, rows.length); r++) {
+    const row = rows[r] || [];
+    const textCount = row.filter(isText).length;
+    if(textCount >= 2) { ownerRow = row; ownerRowIdx = r; break; }
+    // Also accept 1 text cell if it has at least one numeric sibling (single-team edge case)
+    if(textCount === 1 && row.filter(isNum).length >= 1) { ownerRow = row; ownerRowIdx = r; break; }
+  }
+  if(!ownerRow) return [];
+
+  // ── Step 2: Locate each team's name column and price column ─
+  // Scan ALL columns (0-based) — handles both col-A-missing and col-A-present cases.
+  const teamCols = [];
+  for(let c = 0; c < ownerRow.length; c++) {
+    if(!isText(ownerRow[c])) continue;
+    const owner = clean(ownerRow[c]);
+
+    // Find the price column: first numeric cell in data rows starting from c+1
+    // Look in cols c+1 and c+2 (in case there's a gap)
+    let priceCol = -1;
+    for(let pc = c+1; pc <= c+2 && pc < (ownerRow.length + 2); pc++) {
+      // Check 2-3 data rows to confirm it's consistently numeric
+      let numericCount = 0;
+      for(let r = ownerRowIdx+1; r < Math.min(ownerRowIdx+4, rows.length); r++) {
+        if(isNum((rows[r]||[])[pc])) numericCount++;
+      }
+      if(numericCount >= 1) { priceCol = pc; break; }
+    }
+    if(priceCol === -1) priceCol = c + 1; // fallback
+
+    teamCols.push({ nameCol: c, priceCol, owner });
+  }
+  if(!teamCols.length) return [];
+
+  // ── Step 3: Collect players for each team ──────────────────
+  return teamCols.map(({ nameCol, priceCol, owner }) => {
+    const players = [];
+    for(let r = ownerRowIdx + 1; r < rows.length; r++) {
+      const row  = rows[r] || [];
+      const name = clean(row[nameCol]);
+      if(name.length >= 3 && /[a-zA-Z]/.test(name) && !isNum(name)) {
+        players.push({ name, price: parseFloat(row[priceCol]) || 0, owner });
+      }
+    }
+    return players.length ? { name: owner, owner, players } : null;
+  }).filter(Boolean);
+}
+
+// Use CricAPI players search to validate names
+async function validateNamesViaAPI(teams) {
+  const sugg = {};
+  const allNames = [...new Set(teams.flatMap(t => t.players.map(p => p.name)))];
+  // Only check names that don't closely match our local known list
+  const suspicious = allNames.filter(name => {
+    const best = fuzzySuggest(name);
+    return !best.length || best[0].score < 0.85;
+  });
+  if(!suspicious.length) return sugg;
+
+  // Show validating message
+  const banner = document.getElementById('wiz-parsed-banner');
+  if(banner) banner.textContent += ' — 🔍 Validating names via API...';
+
+  for(const name of suspicious.slice(0, 10)) { // limit API calls
+    try {
+      const data = await cricFetch(`https://api.cricapi.com/v1/players?apikey=${API_KEY}&search=${encodeURIComponent(name)}&offset=0`);
+      if(data?.status === 'success' && data.data?.length) {
+        const matches = data.data.slice(0,3).map(p => ({name: p.name, score: 0.9}));
+        // Only flag if API returns different name
+        if(matches.length && norm(matches[0].name) !== norm(name)) {
+          sugg[name] = matches;
+        }
+      }
+    } catch(e) {
+      // API failed, fall back to local fuzzy for this name
+      const local = fuzzySuggest(name);
+      if(local.length && local[0].score < 0.98) sugg[name] = local;
+    }
+  }
+  if(banner) banner.textContent = banner.textContent.replace(' — 🔍 Validating names via API...', ' — ✅ Names validated');
+  return sugg;
+}
+
+function wizNext() {
+  state.wiz.tName = document.getElementById('wiz-name').value.trim();
+  state.wiz.sid   = document.getElementById('wiz-sid').value.trim();
+  if(!state.wiz.tName){ alert('Please enter a tournament name.'); return; }
+  if(!state.wiz.sid){ alert('Series ID is required — paste it from CricAPI.'); return; }
+  const hasSugg = Object.keys(state.wiz.suggestions).length > 0;
+  goPage(hasSugg ? 'resolve' : 'preview');
+}
+
+function showPoints(){
+
+alert(`
+BATTTING
+Run = 1
+Four = 1
+Six = 2
+Not Out = 10
+
+Strike Rate Bonus
+<50 = -60
+<75 = -40
+<100 = -20
+>150 = +10
+>175 = +20
+>200 = +40
+>250 = +60
+>300 = +80
+
+Bowling
+Wicket = 25
+Bowled/LBW = 10
+Dot ball = 1
+Wide/No ball = -2
+
+Economy Bonus
+<1 = +120
+<2 = +80
+<4 = +40
+<6 = +20
+
+Captain = 2x
+Vice Captain = 1.5x
+`);
+
+}
+// ═══════════════════════════════════════════════════
+// FUZZY NAME MATCHING
+// ═══════════════════════════════════════════════════
+const KNOWN = [
+  "Virat Kohli","Rohit Sharma","Shubman Gill","KL Rahul","Shreyas Iyer",
+  "Ravindra Jadeja","Hardik Pandya","Jasprit Bumrah","Arshdeep Singh",
+  "Kuldeep Yadav","Mohammed Siraj","Rishabh Pant","Suryakumar Yadav",
+  "Ishan Kishan","Sanju Samson","Abhishek Sharma","Rinku Singh","Shivam Dube",
+  "Axar Patel","Varun Chakaravarthy","Ravi Bishnoi","Harshit Rana",
+  "MS Dhoni","Yuzvendra Chahal","Washington Sundar","Prasidh Krishna",
+  "Nitish Kumar Reddy","Tilak Varma","Yashasvi Jaiswal",
+  "Joe Root","Ben Stokes","Jos Buttler","Ben Duckett","Harry Brook",
+  "Jonny Bairstow","Zak Crawley","Jofra Archer","Mark Wood","Adil Rashid",
+  "Daryl Mitchell","Kane Williamson","Devon Conway","Glenn Phillips",
+  "Rachin Ravindra","Mitchell Santner","Tim Southee","Trent Boult",
+  "Matt Henry","Kyle Jamieson","Ish Sodhi","Lockie Ferguson","Will Young",
+  "Henry Nicholls","Michael Bracewell","Aiden Markram","Temba Bavuma",
+  "Quinton de Kock","David Miller","Heinrich Klaasen","Kagiso Rabada",
+  "Brydon Carse","Will Jacks","Jamie Smith","Saqib Mahmood","Wiaan Mulder",
+  "Keshav Maharaj","Ryan Rickelton","Dewald Brevis","Nandre Burger",
+  "Finn Allen","Matthew Breetzke","Senuran Muthusamy","Bevon Jacobs"
+];
+
+
+
+function updateCaptainPlayers(){
+
+const teamId = document.getElementById("cap-team").value;
+const t = getTournament();
+
+const team = (t.teams || []).find(x => x.id === teamId);
+
+const capSel = document.getElementById("cap-player");
+const vcSel = document.getElementById("vc-player");
+
+if(!team){
+capSel.innerHTML = "";
+vcSel.innerHTML = "";
+return;
+}
+
+const options = team.players.map(p => `
+<option value="${p.id}">${p.name}</option>
+`).join("");
+
+capSel.innerHTML = options;
+vcSel.innerHTML = options;
+
+}
+
+function fuzzySuggest(name) {
+  const nn = norm(name);
+  return KNOWN.map(p => {
+    const np = norm(p);
+    if(np===nn) return {name:p,score:1};
+    if(np.includes(nn)||nn.includes(np)) return {name:p,score:0.9};
+    let m=0; for(let c of (nn.length<np.length?nn:np)) if((nn.length>=np.length?nn:np).includes(c)) m++;
+    return {name:p, score:m/Math.max(nn.length,np.length)};
+  }).filter(p=>p.score>=0.55).sort((a,b)=>b.score-a.score).slice(0,3);
+}
+
+// ═══════════════════════════════════════════════════
+// RESOLVE PAGE
+// ═══════════════════════════════════════════════════
+function renderResolve() {
+  const container = document.getElementById('resolve-items');
+  container.innerHTML = '';
+  const entries = Object.entries(state.wiz.suggestions);
+  entries.forEach(([orig, suggs]) => {
+    const card = document.createElement('div');
+    card.className = 'card mb-16';
+    card.style.border = '1px solid rgba(251,191,36,.25)';
+    card.innerHTML = `
+      <div class="flex items-center gap-14 mb-12">
+        <span style="font-size:18px">⚠️</span>
+        <div>
+          <div class="txt-dim fs-11">Found in Excel:</div>
+          <div class="fw-800 txt-warn" style="font-size:15px">"${escHtml(orig)}"</div>
+        </div>
+      </div>
+      <div class="txt-dim fs-12 mb-8">Did you mean?</div>
+      <div class="flex" style="flex-wrap:wrap;gap:8px" id="pills-${escId(orig)}">
+        ${suggs.map(s=>`
+          <button class="name-pill ${state.wiz.choices[orig]===s.name?'selected':''}"
+            onclick="pickName('${escId(orig)}','${escAttr(orig)}','${escAttr(s.name)}')">
+            ${escHtml(s.name)} <span style="color:var(--dim);font-size:10px;margin-left:6px">${Math.round(s.score*100)}%</span>
+          </button>
+        `).join('')}
+        <button class="name-pill keep-orig ${state.wiz.choices[orig]===orig?'selected':''}"
+          onclick="pickName('${escId(orig)}','${escAttr(orig)}','__KEEP__')">
+          Keep "${escHtml(orig)}"
+        </button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  updateResolveBtn();
+}
+
+function pickName(escapedOrig, orig, chosen) {
+  state.wiz.choices[orig] = chosen==='__KEEP__' ? orig : chosen;
+  // Re-render pills for this item
+  const pillsEl = document.getElementById('pills-'+escapedOrig);
+  if(pillsEl) {
+    pillsEl.querySelectorAll('.name-pill').forEach(btn => {
+      const isKeep = btn.classList.contains('keep-orig');
+      const btnText = btn.textContent.trim().split(' ')[0]; // rough match
+      btn.classList.remove('selected');
+      if(isKeep && state.wiz.choices[orig]===orig) btn.classList.add('selected');
+      else if(!isKeep && state.wiz.choices[orig] && btn.textContent.includes(state.wiz.choices[orig])) btn.classList.add('selected');
+    });
+    // Simpler: just re-render the whole resolve page
+    renderResolve();
+  }
+  updateResolveBtn();
+}
+
+function updateResolveBtn() {
+  const entries = Object.entries(state.wiz.suggestions);
+  const allDone = entries.every(([o])=>state.wiz.choices[o]);
+  const btn = document.getElementById('resolve-confirm-btn');
+  if(btn){ btn.disabled = !allDone; }
+  const hint = document.getElementById('resolve-hint');
+  if(hint){ hint.style.display = allDone?'none':'block'; }
+}
+
+function resolveConfirm() { goPage('preview'); }
+function resolveSkip() { state.wiz.choices = {}; goPage('preview'); }
+
+// ═══════════════════════════════════════════════════
+// PREVIEW PAGE
+// ═══════════════════════════════════════════════════
+function renderPreview() {
+  const {parsedTeams, choices, tName, sid} = state.wiz;
+  const total = parsedTeams.reduce((s,t)=>s+t.players.length,0);
+
+  document.getElementById('preview-summary').innerHTML = `
+    <div><div class="fs-11 txt-dim">TOURNAMENT</div><div class="fw-800 txt-main fs-15">${escHtml(tName)||'(no name)'}</div></div>
+    <div><div class="fs-11 txt-dim">OWNERS / TEAMS</div><div class="fw-800 txt-acc" style="font-size:22px">${parsedTeams.length}</div></div>
+    <div><div class="fs-11 txt-dim">PLAYERS</div><div class="fw-800 txt-acc" style="font-size:22px">${total}</div></div>
+    ${sid?`<div><div class="fs-11 txt-dim">SERIES ID</div><div class="fw-700 txt-ok fs-12" style="margin-top:2px">${escHtml(sid.slice(0,28))}…</div></div>`:''}
+  `;
+
+  const grid = document.getElementById('preview-teams');
+  grid.innerHTML = '';
+  parsedTeams.forEach(team => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const playerTags = team.players.map(p => {
+      const res = choices[p.name];
+      const cor = res && res !== p.name;
+      const displayName = res || p.name;
+      return `<span class="ptag ${cor?'corrected':''}" title="${p.price?p.price+'Cr':'No price'}">
+        ${escHtml(displayName)}
+        ${p.price?`<span style="font-size:9px;color:var(--warn);margin-left:3px">${p.price}Cr</span>`:''}
+        ${cor?'<span style="font-size:9px;color:var(--dim)"> ✓</span>':''}
+      </span>`;
+    }).join('');
+    card.innerHTML = `
+      <div class="flex jc-between mb-12">
+        <div>
+          <div class="fw-800 txt-main fs-15">${escHtml(team.owner||team.name)}</div>
+          <div style="margin-top:8px">
+          ${team.players.map(p => `
+          <div style="font-size:13px;color:#cbd5f5">• ${escHtml(p.name)}</div>
+          `).join("")}
+          </div>
+          <div class="fs-11 txt-dim" style="margin-top:2px">👤 Owner · ${team.players.length} players</div>
+        </div>
+        <span class="badge" style="background:var(--accd);border:1px solid var(--bdra);color:var(--acc)">${team.players.length} players</span>
+      </div>
+      <div>${playerTags}</div>
+    `;
+    grid.appendChild(card);
+  });
+
+  const noNameWarn = document.getElementById('preview-no-name-warn');
+  const createBtn = document.getElementById('preview-create-btn');
+  if(!tName.trim()) {
+    noNameWarn.style.display='block'; createBtn.disabled=true;
+  } else {
+    noNameWarn.style.display='none'; createBtn.disabled=false;
+  }
+}
+
+function createTournament() {
+  const {tName, sid, parsedTeams, choices} = state.wiz;
+  if(!tName.trim()) return;
+  if(!sid.trim()) { alert('Series ID is required!'); return; }
+  const teams = parsedTeams.map(team => ({
+    id: makeId('t'),
+    name: team.name,
+    owner: team.owner || team.name,
+    players: team.players.map(p => ({
+      id: makeId('p'),
+      name: choices[p.name] || p.name,
+      originalName: p.name,
+      price: p.price || 0,
+      owner: team.owner || team.name,
+      totalPoints:0, battingPoints:0, bowlingPoints:0, fieldingPoints:0,
+      matchPoints:{}, isInjured:false
+    }))
+  }));
+  const newT = {
+    id: Date.now().toString(),
+    name: tName, weeklyCaptains:{}, seriesId: sid, status:'active',
+    startDate: new Date().toISOString().split('T')[0],
+    teams, matches:[], createdAt:Date.now()
+  };
+  state.tournaments.push(newT);
+  // Persist to server (if available) otherwise keep local copy
+  (async()=>{
+    try{
+      const payload = { ...newT };
+      // send full tournament structure (teams/players)
+      const resp = await apiSaveTournament(payload);
+      if(resp && resp.status === 'success' && resp.id){
+        // use server id
+        newT.id = String(resp.id);
+        // reload from server to get consistent IDs, but simple replace for now
+      }
+    }catch(e){
+      try{ localStorage.setItem("fantasy_tournaments", JSON.stringify(state.tournaments)); }catch(err){}
+    }
+  })();
+  state.wiz = { tName:'', sid:'', parsedTeams:[], suggestions:{}, choices:{} };
+  goPage('admin-home');
+}
+
+// ═══════════════════════════════════════════════════
+// TOURNAMENT VIEW
+// ═══════════════════════════════════════════════════
+let currentTab = 'leaderboard';
+
+function renderTournamentContent() {
+  const t = getTournament();
+  if(!t) return;
+
+  // Show/hide manage tab
+  document.getElementById('tab-btn-manage').style.display = state.user==='admin' ? 'block' : 'none';
+
+  renderLeaderboard(t);
+  renderMatchesList(t);
+  if(state.user==='admin') renderManage(t);
+  switchTab(currentTab);
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  ['leaderboard','matches','manage'].forEach(k => {
+    const content = document.getElementById('tab-'+k);
+    const btn = document.getElementById('tab-btn-'+k);
+    if(content) content.style.display = k===tab ? 'block' : 'none';
+    if(btn){ btn.classList.toggle('active', k===tab); }
+  });
+}
+
+// ── Leaderboard ───────────────────────────────────
+function renderLeaderboard(t) {
+  const teams = t.teams||[];
+  const ranked = [...teams]
+    .map(tm=>({...tm, total:(tm.players||[]).reduce((s,p)=>{
+
+let pts=p.totalPoints||0;
+
+const wc=t.weeklyCaptains||{};
+let multiplier = 1;
+
+Object.values(wc).forEach(week=>{
+  Object.values(week).forEach(sel=>{
+    if(p.id===sel.captain) multiplier = Math.max(multiplier,2);
+    if(p.id===sel.vc) multiplier = Math.max(multiplier,1.5);
+  });
+});
+
+pts *= multiplier;
+
+return s+pts;
+
+},0)}))
+    .sort((a,b)=>b.total-a.total);
+    const wc = t.weeklyCaptains || {};
+
+const allP = teams.flatMap(tm=>
+(tm.players||[]).map(p=>{
+
+let pts = p.totalPoints || 0;
+let multiplier = 1;
+
+Object.values(wc).forEach(week=>{
+Object.values(week).forEach(sel=>{
+if(p.id===sel.captain) multiplier = Math.max(multiplier,2);
+if(p.id===sel.vc) multiplier = Math.max(multiplier,1.5);
+});
+});
+
+return {...p,teamName:tm.name,totalWithCap:pts*multiplier};
+
+})
+).sort((a,b)=>b.totalWithCap-a.totalWithCap);
+
+  // Top performers
+  const medals = ['🥇','🥈','🥉'];
+  const tpBlock = document.getElementById('top-performers');
+  const tpList = document.getElementById('top-performers-list');
+  if(allP.length) {
+    tpBlock.style.display='block';
+    tpList.innerHTML = allP.map((p,i)=>{
+      const medalColor = ['var(--gold)','var(--silver)','var(--bronze)'][i]||'var(--dim)';
+      const ownerDifferent = p.owner && norm(p.owner) !== norm(p.teamName);
+      const ownerHtml = ownerDifferent ? `<div>${escHtml(p.owner)}</div>` : '';
+      const teamHtml = `<div style="color:var(--dim);font-size:12px;margin-top:2px">${escHtml(p.teamName)}</div>`;
+      const points = p.totalWithCap || p.totalPoints || 0;
+      return `
+      <div class="flex items-center gap-12" style="padding:10px 0;border-bottom:1px solid var(--bdr)">
+        <span style="font-size:18px;width:28px;text-align:center;font-weight:900;color:${medalColor}">
+          ${medals[i]||i+1}
+        </span>
+        <div class="flex-1">
+          <div class="fw-700 txt-main">${escHtml(p.name)}</div>
+          <div class="fs-11 txt-dim" style="margin-top:6px">
+            ${ownerHtml}
+            <div style="color:var(--dim);font-size:12px;margin-top:2px">
+              ${escHtml(p.teamName)}${p.teamName? ' · ': ''}
+              ${p.country ? `<span class="txt-dim">${escHtml(p.country)}</span>` : `<span class="tp-country" data-player-name="${escAttr(p.name)}" id="tp-country-${i}">...</span>`}
+            </div>
+          </div>
+        </div>
+        <div class="ta-right">
+          <div class="txt-acc fw-800" style="font-size:18px">${points}</div>
+          <div class="fs-10 txt-dim">pts</div>
+        </div>
+      </div>
+    `;
+    }).join('');
+  } else {
+    tpBlock.style.display='none';
+  }
+
+  // After rendering the top performers, asynchronously populate country/team names
+  setTimeout(populateTopPerformerCountries, 10);
+
+  // Standings
+  const standList = document.getElementById('standings-list');
+  if(!ranked.length){ standList.innerHTML='<div class="txt-dim ta-center" style="padding:30px">No teams yet</div>'; return; }
+  standList.innerHTML = '';
+  const leaderPoints = ranked[0]?.total || 0;
+
+ranked.forEach((team,i) => {
+
+let leadText = "";
+
+if(i === 0){
+leadText = "Leader";
+}else{
+const diff = leaderPoints - team.total;
+leadText = diff + " pts behind";
+}
+    const row = document.createElement('div');
+    row.className = 'team-row';
+    row.innerHTML = `
+      <span style="width:32px;text-align:center;font-size:18px;font-weight:900;color:${['var(--gold)','var(--silver)','var(--bronze)'][i]||'var(--dim)'}">
+        ${['🥇','🥈','🥉'][i]||i+1}
+      </span>
+      <div class="flex-1">
+        <div class="fw-800 txt-main" style="font-size:16px">${escHtml(team.name)}</div>
+        <div class="fs-11 txt-dim">${team.players?.length||0} players · ${leadText}${team.owner && norm(team.owner)!==norm(team.name) ? ` · <span style="color:var(--acc)">👤 ${escHtml(team.owner)}</span>` : ''}</div>
+      </div>
+      <div class="ta-right" style="margin-right:10px">
+        <div class="txt-acc fw-800" style="font-size:22px">${team.total||0}</div>
+        <div class="fs-10 txt-dim">TOTAL PTS</div>
+      </div>
+      <span class="txt-dim fs-13" id="arrow-${i}">▼</span>
+    `;
+    const detail = document.createElement('div');
+    detail.style.cssText = 'display:none;padding-left:46px;padding-bottom:12px';
+    const sortedP = [...(team.players||[])].sort((a,b)=>(b.totalPoints||0)-(a.totalPoints||0));
+    detail.innerHTML = sortedP.map(p=>`
+      <div class="player-row">
+        ${p.isInjured?'<span>🩹</span>':''}
+        <div class="flex-1">
+          <div class="${p.isInjured?'txt-dim':'txt-main'} fw-600" style="font-size:14px;${p.isInjured?'text-decoration:line-through':''}">
+            ${escHtml(p.name)}${p.price?`<span style="font-size:10px;color:var(--warn);margin-left:6px;font-weight:400">${p.price}Cr</span>`:''}
+            ${p.country?` <span class="txt-dim" style="font-size:12px;margin-left:8px">· ${escHtml(p.country)}</span>`:''}
+          </div>
+          <div class="fs-11 txt-dim">🏏 ${p.battingPoints||0} · ⚾ ${p.bowlingPoints||0} · 🧤 ${p.fieldingPoints||0}</div>
+        </div>
+        <span style="color:#7dd3fc;font-weight:700;font-size:15px">${p.totalPoints||0}</span>
+      </div>
+    `).join('');
+    let open=false;
+    row.onclick = ()=>{
+      open=!open;
+      detail.style.display=open?'block':'none';
+      const arr=document.getElementById('arrow-'+i);
+      if(arr) arr.textContent=open?'▲':'▼';
+    };
+    standList.appendChild(row);
+    standList.appendChild(detail);
+  });
+}
+
+// ── Matches ───────────────────────────────────────
+function renderMatchesList(t) {
+  const matches = t.matches||[];
+  const el = document.getElementById('matches-content');
+  if(!matches.length){ el.innerHTML='<div class="txt-dim ta-center" style="padding:60px;font-size:15px">🏏<br><br>No matches processed yet<br><span class="fs-12">Use Admin → Manage → Fetch Scores to load matches</span></div>'; return; }
+  const sorted = [...matches].sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
+  el.innerHTML = sorted.map(m=>{
+    const ti = m.teamInfo||[];
+    const teamImgs = ti.slice(0,2).map(team=>`
+      <div style="display:flex;align-items:center;gap:7px;min-width:0">
+        <img src="${team.img||''}" style="width:28px;height:28px;border-radius:50%;background:#1e293b;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'"/>
+        <span style="font-weight:700;font-size:13px;color:var(--txt);white-space:nowrap">${escHtml(team.shortname||team.name)}</span>
+      </div>
+    `).join('<span style="color:var(--dim);font-size:12px;padding:0 4px">vs</span>');
+    const hasTeamInfo = ti.length >= 2;
+    return `
+      <div class="card mb-12" onclick="showMatchDetail('${m.id}')" style="cursor:pointer;transition:background .15s" onmouseenter="this.style.background='var(--surfh)'" onmouseleave="this.style.background=''">
+        ${hasTeamInfo ? `
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+            ${teamImgs}
+          </div>
+        ` : ''}
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+          <div style="min-width:0">
+            <div class="fw-700 txt-main" style="font-size:13px;line-height:1.4">${escHtml(m.name)}</div>
+            ${m.venue?`<div class="txt-dim" style="font-size:11px;margin-top:3px">📍 ${escHtml(m.venue)}</div>`:''}
+            <div class="txt-dim" style="font-size:11px;margin-top:2px">📅 ${m.date||''}</div>
+          </div>
+          <span class="badge" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.35);color:var(--ok);flex-shrink:0">completed</span>
+        </div>
+        ${m.result?`<div style="color:var(--ok);font-size:12px;font-weight:600;margin-top:8px;padding-top:8px;border-top:1px solid var(--bdr)">🏆 ${escHtml(m.result)}</div>`:''}
+      </div>
+    `;
+  }).join('');
+}
+
+function showMatchDetail(matchId) {
+  const t = getTournament();
+  const match = (t.matches||[]).find(m=>m.id===matchId);
+  if(!match) return;
+  const el = document.getElementById('matches-content');
+  const ti = match.teamInfo||[];
+  const teamBanner = ti.length>=2 ? `
+    <div style="display:flex;align-items:center;gap:16px;background:var(--accd);border:1px solid var(--bdra);border-radius:12px;padding:14px 18px;margin-bottom:16px;flex-wrap:wrap">
+      ${ti.map(team=>`
+        <div style="display:flex;align-items:center;gap:10px">
+          <img src="${team.img}" style="width:36px;height:36px;border-radius:50%;background:#1e293b;object-fit:cover" onerror="this.style.display='none'"/>
+          <div>
+            <div style="font-weight:800;color:var(--txt);font-size:15px">${team.name}</div>
+            <div style="color:var(--dim);font-size:11px">${team.shortname}</div>
+          </div>
+        </div>
+      `).join('<div style="flex:1;text-align:center;color:var(--dim);font-weight:900;font-size:18px">vs</div>')}
+    </div>
+  ` : '';
+  let html = `
+    <button class="btn btn-ghost mb-20" onclick="renderMatchesList(getTournament())">← Back</button>
+    ${teamBanner}
+    <div class="fw-800 txt-main" style="font-size:18px;margin-bottom:4px">${escHtml(match.name)}</div>
+    ${match.venue?`<div class="txt-dim fs-12" style="margin-bottom:4px">📍 ${escHtml(match.venue)}</div>`:''}
+    <div style="color:var(--ok);font-weight:600;font-size:13px;margin-bottom:20px">🏆 ${match.result||match.status||''}</div>
+  `;
+  (t.teams||[]).forEach(team => {
+    const active = (team.players||[]).filter(p=>{
+      const mp=(p.matchPoints||{})[matchId];
+      return mp && ((mp.batting||0)+(mp.bowling||0)+(mp.fielding||0))!==0;
+    }).sort((a,b)=>{
+      const ta=(a.matchPoints[matchId]||{}),tb=(b.matchPoints[matchId]||{});
+      return ((tb.batting||0)+(tb.bowling||0)+(tb.fielding||0))-((ta.batting||0)+(ta.bowling||0)+(ta.fielding||0));
+    });
+    if(!active.length) return;
+    html += `<div class="card mb-14"><div class="lbl txt-acc">${escHtml(team.name)}</div>`;
+    active.forEach(p => {
+      const mp=(p.matchPoints[matchId]||{});
+      const tot=(mp.batting||0)+(mp.bowling||0)+(mp.fielding||0);
+      html += `
+        <div class="flex gap-10" style="padding:8px 0;border-bottom:1px solid var(--bdr)">
+          <div class="flex-1">
+            <div class="fw-600 txt-main">${escHtml(p.name)}</div>
+            <div class="fs-11 txt-dim">🏏 Bat ${mp.batting||0} · 🎳 Bowl ${mp.bowling||0} · 🧤 Field ${mp.fielding||0}</div>
+          </div>
+          <span class="txt-acc fw-700" style="font-size:15px">${tot}</span>
+        </div>
+      `;
+    });
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+// ── Manage Tab ────────────────────────────────────
+let currentSubTab = 'upload';
+
+function switchSubTab(sub) {
+  currentSubTab = sub;
+
+  ['upload','scores','captain','injury'].forEach(k => {
+    const el = document.getElementById('sub-'+k);
+    const btn = document.getElementById('sub-btn-'+k);
+
+    if(el) el.style.display = k===sub ? 'block' : 'none';
+    if(btn) btn.classList.toggle('active', k===sub);
+  });
+}
+
+function saveCaptain(){
+
+const teamId = document.getElementById("cap-team").value;
+const cap = document.getElementById("cap-player").value;
+const vc = document.getElementById("vc-player").value;
+
+if(!teamId || !cap || !vc){
+alert("Select team captain and vice captain");
+return;
+}
+
+const t = getTournament();
+
+const week = "week"+(Object.keys(t.weeklyCaptains||{}).length || 1);
+
+const updated = {
+...t,
+weeklyCaptains:{
+...(t.weeklyCaptains||{}),
+[week]:{
+...(t.weeklyCaptains?.[week]||{}),
+[teamId]:{ captain:cap, vc:vc }
+}
+}
+};
+
+updateTournament(updated);
+
+alert("Captain saved");
+
+}
+function renderManage(t){
+  renderSubUpload(t);
+  renderSubScores(t);
+  renderSubInjury(t);
+  renderSubCaptain(t); // add
+  }
+
+// ── Upload More Teams ─────────────────────────────
+let uploadState = { parsedTeams:[], suggestions:{}, choices:{}, stage:'idle' };
+
+function renderSubUpload(t) {
+  const el = document.getElementById('sub-upload');
+  const existing = (t.teams||[]).map(x=>`
+    <span style="background:var(--accd);border:1px solid var(--bdra);border-radius:8px;padding:6px 12px;font-size:13px;color:var(--txt);margin:3px;display:inline-block">
+      ${escHtml(x.name)} <span class="txt-dim">(${x.players?.length||0})</span>
+    </span>
+  `).join('');
+
+  el.innerHTML = `
+    <div class="dropzone" id="upload-dropzone" onclick="document.getElementById('upload-file').click()"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="event.preventDefault();this.classList.remove('drag');handleUploadDrop(event)">
+      <div style="font-size:44px;margin-bottom:12px">📤</div>
+      <div class="fw-800 txt-main" style="font-size:18px;margin-bottom:8px">Upload Teams Excel</div>
+      <div class="txt-dim fs-13" style="line-height:1.8">
+        Drag & drop <strong class="txt-acc">.xlsx</strong> or <span class="txt-acc" style="text-decoration:underline">click to browse</span><br>
+        <span class="fs-12">Each sheet tab = one team · Each row = one player</span>
+      </div>
+      <input type="file" id="upload-file" accept=".xlsx,.xls,.csv" onchange="handleUploadFile(this)"/>
+    </div>
+    <div id="upload-msg" style="display:none;margin-top:14px"></div>
+    ${(t.teams||[]).length?`<div class="card mt-20"><div class="lbl">Existing Teams (${t.teams.length})</div><div style="margin-top:10px">${existing}</div></div>`:''}
+  `;
+}
+
+function handleUploadFile(input) {
+  const file = input.files[0]; input.value='';
+  if(file) parseExcelForUpload(file);
+}
+function handleUploadDrop(e) { if(e.dataTransfer.files[0]) parseExcelForUpload(e.dataTransfer.files[0]); }
+
+function parseExcelForUpload(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  const msgEl = document.getElementById('upload-msg');
+  if(!['xlsx','xls','csv'].includes(ext)) {
+    msgEl.innerHTML='<div class="alert alert-err">❌ Upload .xlsx, .xls or .csv</div>';
+    msgEl.style.display='block'; return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result,{type:'binary'});
+      const skip=['batsman','bowler','catcher','processed','matchinfo','errorlog','sheet10','rules','points'];
+      const hkw=['player','name','team','no','sl','sr','runs','balls','wickets','overs','economy','points'];
+      const teams=[];
+      wb.SheetNames.forEach(sn=>{
+        if(skip.includes(sn.toLowerCase())) return;
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:''});
+        const names=[];
+        rows.forEach(row=>{for(let cell of row){const v=String(cell||'').trim();if(!v||v.length<2||!/[a-zA-Z]/.test(v)||/^\d+$/.test(v))continue;if(hkw.some(h=>v.toLowerCase()===h))continue;names.push(v);break;}});
+        if(names.length>=2) teams.push({name:sn,players:[...new Set(names)]});
+      });
+      if(!teams.length){ msgEl.innerHTML='<div class="alert alert-err">❌ No teams found.</div>'; msgEl.style.display='block'; return; }
+      const sugg={};
+      teams.forEach(t=>t.players.forEach(p=>{const m=fuzzySuggest(p);if(!m.find(x=>norm(x.name)===norm(p))&&m.length&&m[0].score<0.98)sugg[p]=m;}));
+      uploadState = { parsedTeams:teams, suggestions:sugg, choices:{}, stage: Object.keys(sugg).length?'resolve':'preview' };
+      showUploadStage();
+    } catch(err) {
+      msgEl.innerHTML=`<div class="alert alert-err">❌ ${err.message}</div>`; msgEl.style.display='block';
+    }
+  };
+  reader.readAsBinaryString(file);
+}
+
+function showUploadStage() {
+  const el = document.getElementById('sub-upload');
+  const {stage, parsedTeams, suggestions, choices} = uploadState;
+
+  if(stage==='resolve') {
+    const entries = Object.entries(suggestions);
+    const allDone = entries.every(([o])=>choices[o]);
+    el.innerHTML = `
+      <div class="alert alert-warn mb-16"><div class="fw-700">⚠️ ${entries.length} name(s) need confirmation</div></div>
+      ${entries.map(([orig,suggs])=>`
+        <div class="card mb-14" style="border:1px solid rgba(251,191,36,.25)">
+          <div class="mb-8"><span class="txt-dim fs-12">Found: </span><strong class="txt-warn">"${escHtml(orig)}"</strong></div>
+          <div class="flex" style="flex-wrap:wrap;gap:8px">
+            ${suggs.map(s=>`<button class="name-pill ${choices[orig]===s.name?'selected':''}" onclick="uploadPickName('${escAttr(orig)}','${escAttr(s.name)}')">${escHtml(s.name)} <span style="color:var(--dim);font-size:10px;margin-left:5px">${Math.round(s.score*100)}%</span></button>`).join('')}
+            <button class="name-pill keep-orig ${choices[orig]===orig?'selected':''}" onclick="uploadPickName('${escAttr(orig)}','__KEEP__')">Keep "${escHtml(orig)}"</button>
+          </div>
+        </div>
+      `).join('')}
+      <div class="flex gap-12">
+        <button class="btn btn-success" ${allDone?'':'disabled'} onclick="uploadState.stage='preview';showUploadStage()">Confirm →</button>
+        <button class="btn btn-ghost" onclick="uploadState.choices={};uploadState.stage='preview';showUploadStage()">Skip</button>
+        <button class="btn btn-ghost" onclick="renderSubUpload(getTournament())">Cancel</button>
+      </div>
+    `;
+  } else if(stage==='preview') {
+    el.innerHTML = `
+      <div class="fw-700 txt-main mb-16" style="font-size:16px">Preview — ${parsedTeams.length} team(s)</div>
+      ${parsedTeams.map(team=>`
+        <div class="card mb-14">
+          <div class="flex jc-between mb-12"><div class="fw-800 txt-main fs-15">${escHtml(team.name)}</div><span class="badge" style="background:var(--accd);border:1px solid var(--bdra);color:var(--acc)">${team.players.length} players</span></div>
+          <div>${team.players.map(p=>{const res=choices[p];const cor=res&&res!==p;return`<span class="ptag ${cor?'corrected':''}">${escHtml(res||p)}${cor?'<span style="font-size:9px"> ✓</span>':''}</span>`;}).join('')}</div>
+        </div>
+      `).join('')}
+      <div class="flex gap-12">
+        <button class="btn btn-success" onclick="saveUploadedTeams()">✅ Save Teams</button>
+        <button class="btn btn-ghost" onclick="renderSubUpload(getTournament())">Cancel</button>
+      </div>
+    `;
+  }
+}
+
+function uploadPickName(orig, chosen) {
+  uploadState.choices[orig] = chosen==='__KEEP__' ? orig : chosen;
+  showUploadStage();
+}
+
+function saveUploadedTeams() {
+  const t = getTournament();
+  const {parsedTeams, choices} = uploadState;
+  const existing = (t.teams||[]).map(x=>norm(x.name));
+  const toAdd = parsedTeams
+    .filter(team=>!existing.includes(norm(team.name)))
+    .map(team=>({
+      id:makeId('t'), name:team.name,
+      players:team.players.map(p=>({id:makeId('p'),name:choices[p]||p,originalName:p,totalPoints:0,battingPoints:0,bowlingPoints:0,fieldingPoints:0,matchPoints:{},isInjured:false}))
+    }));
+  const updated = {...t, teams:[...(t.teams||[]),...toAdd]};
+  updateTournament(updated);
+  uploadState = {parsedTeams:[],suggestions:{},choices:{},stage:'idle'};
+  renderSubUpload(updated);
+  const msgEl = document.getElementById('upload-msg');
+  if(msgEl){ msgEl.innerHTML=`<div class="alert alert-ok">✅ Added ${toAdd.length} team(s)!</div>`; msgEl.style.display='block'; }
+}
+
+// ── Fetch Scores ──────────────────────────────────
+function renderSubScores(t) {
+  const el = document.getElementById('sub-scores');
+  const hitsLeft = 100 - getHits();
+  const alreadyScored = new Set(
+    (t.teams||[]).flatMap(tm=>(tm.players||[]).flatMap(p=>Object.keys(p.matchPoints||{})))
+  );
+  el.innerHTML = `
+    <div class="card">
+      <div class="lbl">🏏 Sync Match Scores</div>
+      <div style="background:var(--accd);border:1px solid var(--bdra);border-radius:10px;padding:12px 16px;margin:12px 0 16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <span class="fs-12 txt-dim"><b style="color:var(--acc)">1 hit</b> series info + <b style="color:var(--acc)">1 hit</b> per new scorecard · max 10 per sync</span>
+          <span class="badge" style="background:${hitsLeft<20?'rgba(248,113,113,.2)':'rgba(52,211,153,.15)'};border:1px solid ${hitsLeft<20?'rgba(248,113,113,.4)':'rgba(52,211,153,.35)'};color:${hitsLeft<20?'var(--err)':'var(--ok)'}">
+            ${hitsLeft}/100 hits left today
+          </span>
+        </div>
+        <div class="txt-dim fs-11" style="margin-top:5px">Matches already scored: ${alreadyScored.size}</div>
+      </div>
+
+      <div class="lbl">Series ID</div>
+      <div style="display:flex;gap:8px;margin-top:6px;margin-bottom:16px">
+        <input id="scores-sid" class="inp flex-1" placeholder="Paste CricAPI Series ID" value="${escHtml(t.seriesId||'')}"/>
+        <button class="btn btn-primary" onclick="fetchScores()" style="white-space:nowrap">⚡ Sync</button>
+      </div>
+
+      <div class="txt-dim fs-12 mb-8">Quick series:</div>
+      ${[
+        ['0cdf6736-ad9b-4e95-a647-5ee3a99c5510','ICC T20 WC 2026'],
+        ['d5a498c8-7596-4b93-8ab0-e0efc3345312','IPL 2025'],
+        ['b31173af-1e08-4359-8a7e-1521b9847e54','NZ Tour India 2026']
+      ].map(([id,name])=>`
+        <button class="w100 ta-left" style="background:none;border:1px solid var(--bdr);border-radius:8px;padding:8px 12px;cursor:pointer;font-size:13px;margin-bottom:6px;transition:border-color .15s;color:var(--txt)"
+          onmouseover="this.style.borderColor='var(--bdra)'"
+          onmouseout="this.style.borderColor='var(--bdr)'"
+          onclick="document.getElementById('scores-sid').value='${id}'">
+          <b>${name}</b> <span class="txt-dim fs-11" style="font-family:monospace">${id.slice(0,10)}…</span>
+        </button>`).join('')}
+      <div id="scores-log" class="log-box" style="display:none;margin-top:14px"></div>
+    </div>
+  `;
+}
+
+function addScoreLog(line, color='var(--dim)') {
+  const log = document.getElementById('scores-log');
+  if(!log) return;
+  log.style.display='block';
+  const d=document.createElement('div');
+  d.style.cssText=`color:${color};margin-bottom:4px`;
+  d.textContent=line;
+  log.appendChild(d);
+  log.scrollTop=log.scrollHeight;
+}
+
+// CORS-safe fetch with multiple proxy fallbacks
+async function cricFetch(url) {
+  const proxies = [
+    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+    u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  ];
+  try {
+    const r = await fetch(url, {mode:'cors'});
+    if(r.ok) return await r.json();
+  } catch(e) {}
+  for(const px of proxies) {
+    try {
+      const r = await fetch(px(url), {signal: AbortSignal.timeout(8000)});
+      if(!r.ok) continue;
+      const txt = await r.text();
+      try { const j=JSON.parse(txt); if(j.contents) return JSON.parse(j.contents); return j; } catch(e2){}
+    } catch(e) {}
+  }
+  throw new Error('All CORS proxies failed — try a browser CORS extension.');
+}
+
+// Cache for player -> country lookups
+const PLAYER_COUNTRY_CACHE = {};
+
+// Try to fetch player's country/team from CricAPI (returns empty string if unknown)
+async function getPlayerCountry(name) {
+  if(!name) return '';
+  if(PLAYER_COUNTRY_CACHE[name]) return PLAYER_COUNTRY_CACHE[name];
+  try {
+    const data = await cricFetch(`https://api.cricapi.com/v1/players?apikey=${API_KEY}&search=${encodeURIComponent(name)}&offset=0`);
+    if(data && Array.isArray(data.data) && data.data.length) {
+      const p = data.data[0];
+      const country = p.country || p.country_name || p.team || p.nationality || p.teamName || p.nationalityName || '';
+      PLAYER_COUNTRY_CACHE[name] = country || '';
+      return PLAYER_COUNTRY_CACHE[name];
+    }
+  } catch(e) {
+    // ignore and fallback to empty
+  }
+  PLAYER_COUNTRY_CACHE[name] = '';
+  return '';
+}
+
+// Lookup helper: try exact, then normalized match in PLAYER_COUNTRY_CACHE
+function lookupCountryFromCache(name) {
+  if(!name) return '';
+  if(PLAYER_COUNTRY_CACHE[name]) return PLAYER_COUNTRY_CACHE[name];
+  const nn = norm(name);
+  for(const k of Object.keys(PLAYER_COUNTRY_CACHE)){
+    if(norm(k) === nn) return PLAYER_COUNTRY_CACHE[k];
+  }
+  return '';
+}
+
+// Load full players list from CricAPI and populate PLAYER_COUNTRY_CACHE (with simple caching)
+async function loadPlayersList(force=false) {
+  const key = 'cric_players_cache_v1';
+  try {
+    const cached = JSON.parse(localStorage.getItem(key) || 'null');
+    if(cached && !force && (Date.now() - (cached.ts||0) < 1000*60*60*24*7)) {
+      Object.assign(PLAYER_COUNTRY_CACHE, cached.data || {});
+      return;
+    }
+  } catch(e) {}
+
+  // Fetch pages of players. Stop when empty page returned or safety cap reached.
+  const pageSize = 1000;
+  let offset = 0;
+  const maxOffset = 50000;
+  const accumulated = {};
+  while(offset <= maxOffset){
+    try{
+      const url = `https://api.cricapi.com/v1/players?apikey=${API_KEY}&offset=${offset}`;
+      const res = await cricFetch(url);
+      if(!res || !Array.isArray(res.data) || res.data.length === 0) break;
+      res.data.forEach(p => { if(p && p.name) accumulated[p.name] = p.country || p.country_name || ''; });
+      if(res.data.length < pageSize) break;
+      offset += pageSize;
+    } catch(e){
+      break;
+    }
+  }
+  Object.assign(PLAYER_COUNTRY_CACHE, accumulated);
+  try{ localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data: accumulated })); }catch(e){}
+}
+
+// Populate all top-performer country spans asynchronously using the players list first
+async function populateTopPerformerCountries() {
+  // ensure we have players list cached (non-forced)
+  try{ await loadPlayersList(false); }catch(e){}
+  const els = Array.from(document.querySelectorAll('.tp-country'));
+  els.forEach(async el => {
+    const name = el.dataset.playerName;
+    if(!name) return;
+    let country = lookupCountryFromCache(name);
+    if(!country) {
+      // fallback to search-by-name API
+      try { country = await getPlayerCountry(name); } catch(e) { country = ''; }
+    }
+    el.textContent = country || '';
+  });
+}
+
+async function fetchScores() {
+  const sid = (document.getElementById('scores-sid')?.value||'').trim();
+  const log = document.getElementById('scores-log');
+  if(log){ log.innerHTML=''; log.style.display='block'; }
+  if(getHits() >= 95){ addScoreLog('❌ API limit near (95+). Try tomorrow.','var(--err)'); return; }
+  if(!sid){ addScoreLog('⚠️ Enter a Series ID.','var(--warn)'); return; }
+
+  const t = getTournament();
+  const alreadyDone = new Set((t.matches||[]).map(m => m.id));
+
+  // ── STEP 1: 1 hit to get series info + full match list ──
+  addScoreLog('📡 Fetching series info... (1 API hit)');
+  let seriesData;
+  try {
+    seriesData = await cricFetch(
+      `https://api.cricapi.com/v1/series_info?apikey=${API_KEY}&id=${sid}&offset=0`
+    );
+    bumpHits(1);
+  } catch(err) {
+    addScoreLog('❌ ' + err.message, 'var(--err)');
+    return;
+  }
+
+  if(seriesData?.status !== 'success') {
+    addScoreLog('❌ ' + (seriesData?.reason || 'Series not found — check Series ID'), 'var(--err)');
+    return;
+  }
+
+  const allMatches = seriesData.data?.matchList || [];
+  const seriesName  = seriesData.data?.info?.name || sid;
+  addScoreLog(`✅ "${seriesName}" — ${allMatches.length} total matches`, 'var(--ok)');
+
+  // ── Store ALL match metadata (results + teamInfo) from series_info ──
+  // This costs 0 extra hits — series_info already contains all of this!
+  let updated = { ...t, teams: t.teams.map(x=>({...x, players:[...x.players]})) };
+  let metaAdded = 0;
+  allMatches.forEach(m => {
+    if(alreadyDone.has(m.id)) return;
+    const s = (m.status||'').toLowerCase();
+    const isDone = m.matchEnded || s.includes('won') || s.includes('draw') ||
+                   s.includes('tied') || s.includes('abandoned');
+    if(isDone) {
+      updated = recordMatchOnly(updated, m);
+      metaAdded++;
+    }
+  });
+  if(metaAdded > 0) {
+    addScoreLog(`📋 ${metaAdded} new completed match(es) recorded (results + team flags)`, 'var(--acc)');
+  }
+
+  // ── STEP 2: Fetch scorecards ONLY for relevant unscored matches ──
+  // Match IDs already scored (have player points attributed)
+  const scoredMatchIds = new Set(
+    (t.teams||[]).flatMap(tm =>
+      (tm.players||[]).flatMap(p => Object.keys(p.matchPoints||{}))
+    )
+  );
+
+  // All team/player names in our fantasy league (normalised for matching)
+  const ourPlayerNames = new Set(
+    (t.teams||[]).flatMap(tm => (tm.players||[]).map(p => norm(p.name)))
+  );
+
+  // A match is relevant if ANY of the playing teams could contain our players.
+  // We check match.teams[] (e.g. ["India","South Africa"]) against player names —
+  // any player name that contains a team's country word counts.
+  // Simpler & reliable: if fantasyEnabled=true the API already flags it.
+  // Fall back to checking all completed unscored matches.
+  const isCompleted = m => {
+    const s = (m.status||'').toLowerCase();
+    return m.matchEnded || s.includes('won') || s.includes('draw') || s.includes('tied');
+  };
+
+  const needScoring = allMatches.filter(m => {
+    if(scoredMatchIds.has(m.id)) return false;   // already scored
+    if(!isCompleted(m)) return false;              // not finished yet
+    return true;                                   // all completed unscored matches
+  }).sort((a,b) => new Date(b.date) - new Date(a.date)); // newest first
+
+  if(!needScoring.length) {
+    addScoreLog('✅ All completed matches already scored! Total hits: 1', 'var(--ok)');
+    updateTournament(updated);
+    renderLeaderboard(getTournament());
+    renderMatchesList(getTournament());
+    return;
+  }
+
+  // Cap: max 10 per sync to protect daily limit.
+  // On a 100-match series first sync = 11 hits total (1 + 10).
+  // Run again to score more. Each subsequent sync = 1 + new_completed hits.
+  const remaining = Math.min(94 - getHits(), 10);
+  const toScore   = needScoring.slice(0, remaining);
+  const skipped   = needScoring.length - toScore.length;
+  addScoreLog(
+    `🏏 Scoring ${toScore.length} match(es)` +
+    (skipped > 0 ? ` · ${skipped} deferred (sync again to get them)` : ''),
+    'var(--acc)'
+  );
+
+  let scorecardHits = 0;
+  for(const match of toScore) {
+    if(getHits() >= 94) { addScoreLog('⚠️ Hit limit close — stopping.','var(--warn)'); break; }
+    const label = match.name.split(',')[0];
+    addScoreLog(`  ⬇️ ${label}...`);
+    try {
+      const sc = await cricFetch(
+        `https://api.cricapi.com/v1/match_scorecard?apikey=${API_KEY}&id=${match.id}`
+      );
+      scorecardHits++;
+      bumpHits(1);
+      if(sc?.status === 'success' && sc.data) {
+        const ptsBefore = updated.teams.flatMap(t=>t.players).reduce((s,p)=>s+(p.totalPoints||0),0);
+        const normalized = normalizeScorecard(sc.data);
+        updated = applyMatch(updated, match, normalized);
+        const ptsAfter = updated.teams.flatMap(t=>t.players).reduce((s,p)=>s+(p.totalPoints||0),0);
+        const newPts = ptsAfter - ptsBefore;
+        const innings = sc.data.innings||[];
+        if(!innings.length) {
+          addScoreLog(`  ⚠️ Scorecard has 0 innings — API may not have detailed data yet`, 'var(--warn)');
+        } else {
+          const batRows  = innings.reduce((s,i)=>s+(i.batting||[]).length,0);
+          const bowlRows = innings.reduce((s,i)=>s+(i.bowling||[]).length,0);
+          addScoreLog(`  ✅ ${innings.length} innings · ${batRows} bat rows · ${bowlRows} bowl rows · +${newPts} pts added`, 'var(--ok)');
+        }
+      } else if(sc?.status === 'failure') {
+        addScoreLog(`  ❌ API: ${sc.reason||'unknown error'}`, 'var(--err)');
+      } else {
+        addScoreLog(`  ℹ️ No innings data yet (match may still be processing)`, 'var(--dim)');
+      }
+    } catch(e) {
+      scorecardHits++;
+      bumpHits(1);
+      addScoreLog(`  ❌ ${e.message}`, 'var(--err)');
+    }
+  }
+
+  updateTournament(updated);
+  renderLeaderboard(getTournament());
+  renderMatchesList(getTournament());
+  const totalHits = 1 + scorecardHits;
+  addScoreLog(
+    `✅ Done! Total hits this sync: ${totalHits} | Today's total: ${getHits()}/100`,
+    'var(--ok)'
+  );
+  if(skipped > 0) {
+    addScoreLog(`ℹ️ Sync again to score remaining ${skipped} match(es).`, 'var(--dim)');
+  }
+}
+
+function recordMatchOnly(tournament, matchInfo) {
+  if((tournament.matches||[]).find(m => m.id === matchInfo.id)) return tournament;
+  return {
+    ...tournament,
+    matches: [...(tournament.matches||[]), {
+      id:       matchInfo.id,
+      name:     matchInfo.name,
+      date:     matchInfo.date,
+      venue:    matchInfo.venue || '',
+      status:   'completed',
+      result:   matchInfo.status || '',
+      teamInfo: matchInfo.teamInfo || []
+    }]
+  };
+}
+
+
+function applyMatch(tournament, matchInfo, scorecard) {
+  const mid = matchInfo.id;
+
+  // Build a debug log for this match (shown in console)
+  const dbg = [];
+
+  const updatedTeams = (tournament.teams||[]).map(team => ({
+    ...team,
+    players: (team.players||[]).map(player => {
+      if(player.isInjured) return player;
+      const pn = norm(player.name);
+      let bat = 0, bowl = 0, field = 0;
+      let foundBat = false, foundBowl = false;
+
+      (scorecard.innings||[]).forEach(inn => {
+
+        // ── BATTING ─────────────────────────────────────
+        (inn.batting||[]).forEach(b => {
+          // API: batsman is under b.batsman.name (object) or directly b.name (flat)
+          const bname = norm(b.batsman?.name || b.name || '');
+          if(bname !== pn) return;
+          foundBat = true;
+          const runs  = +(b.r  ?? b.runs   ?? 0);
+          const balls = +(b.b  ?? b.balls  ?? 0);
+          const fours = +(b['4s'] ?? b.fours ?? 0);
+          const sixes = +(b['6s'] ?? b.sixes ?? 0);
+          // Duck: only if batsman actually faced a ball
+          const duck  = runs === 0 && balls > 0;
+          const notOut = (
+            (b.dismissal || "") +
+            (b["dismissal-text"] || "")
+          ).toLowerCase().includes("not out");
+
+          bat += calcBat(runs, balls, fours, sixes, duck, notOut);
+          dbg.push(`BAT ${player.name}: ${runs}(${balls}) 4s:${fours} 6s:${sixes} = ${bat}pts`);
+        });
+
+        // ── BOWLING ──────────────────────────────────────
+        (inn.bowling||[]).forEach(bw => {
+          const bwname = norm(bw.bowler?.name || bw.name || '');
+          if(bwname !== pn) return;
+          foundBowl = true;
+          const wkts   = +(bw.w  ?? bw.wickets ?? 0);
+          const maiden = +(bw.m  ?? bw.maidens ?? 0);
+          const runs_g = +(bw.r  ?? bw.runs    ?? 0);
+          // Overs come as "3.4" = 3 overs 4 balls. Convert to decimal properly.
+          const oversStr = String(bw.o ?? bw.overs ?? '0');
+          const oversDec = parseOvers(oversStr);
+          // Economy: use API-provided eco if available, else calculate
+          const eco = bw.eco ? parseFloat(bw.eco) : (oversDec > 0 ? runs_g / oversDec : 0);
+          bowl += calcBowl(wkts, maiden, runs_g, oversDec, eco);
+          dbg.push(`BOWL ${player.name}: ${wkts}w ${maiden}m ${runs_g}r ${oversStr}ov eco:${eco.toFixed(2)} = ${bowl}pts`);
+        });
+
+        // ── FIELDING ─────────────────────────────────────
+        // Use ONLY fielders[] array — never fall back to string matching
+        // (dismissal string "c X b Y" contains bowler name Y which would wrongly match)
+        // FIELDING (from catching array)
+        (inn.catching || []).forEach(c => {
+
+          const cname = norm(c.catcher?.name || c.name || "");
+          if(cname !== pn) return;
+
+          const catches = +(c.catch || 0);
+          const stump   = +(c.stumped || 0);
+          const runout  = +(c.runout || 0);
+
+          field += catches * 10;
+          field += stump * 10;
+          field += runout * 10;
+
+        });
+      });
+
+      if(foundBat || foundBowl || field > 0) {
+        console.log(`[MATCH ${mid.slice(0,8)}]`, dbg.join(' | '));
+      }
+
+      const mp = { batting: bat, bowling: bowl, fielding: field };
+      return {
+        ...player,
+        matchPoints:    { ...(player.matchPoints||{}), [mid]: mp },
+        battingPoints:  (player.battingPoints||0)  + bat,
+        bowlingPoints:  (player.bowlingPoints||0)  + bowl,
+        fieldingPoints: (player.fieldingPoints||0) + field,
+        totalPoints:    (player.totalPoints||0)    + bat + bowl + field,
+      };
+    })
+  }));
+
+  const already = (tournament.matches||[]).find(m => m.id === mid);
+  const newMatches = already
+    ? tournament.matches.map(m => m.id === mid
+        ? { ...m, status:'completed', result: matchInfo.status, teamInfo: matchInfo.teamInfo||m.teamInfo||[] }
+        : m)
+    : [...(tournament.matches||[]), {
+        id:       mid,
+        name:     matchInfo.name,
+        date:     matchInfo.date,
+        venue:    matchInfo.venue || '',
+        status:   'completed',
+        result:   matchInfo.status,
+        teamInfo: matchInfo.teamInfo || []
+      }];
+
+  return { ...tournament, teams: updatedTeams, matches: newMatches };
+}
+
+// Convert CricAPI overs string "3.4" (3 overs, 4 balls) to decimal (3.667)
+function parseOvers(oversStr) {
+  const parts = String(oversStr||'0').split('.');
+  const fullOvers = parseInt(parts[0]) || 0;
+  const balls     = parseInt(parts[1]) || 0;
+  return fullOvers + (balls / 6);
+}
+
+function calcBat(runs, balls, fours, sixes, duck, notOut=false) {
+
+let pts = 0;
+
+// Runs
+pts += runs;
+
+// Duck
+if(duck) pts -= 10;
+
+// Not out bonus
+if(notOut) pts += 10;
+
+// Boundaries
+pts += fours * 1;
+pts += sixes * 2;
+
+// Strike rate (only if 20 runs OR 10 balls)
+if(runs >= 20 || balls >= 10) {
+
+  const sr = (runs / balls) * 100;
+
+  if(sr < 50) pts -= 60;
+  else if(sr < 75) pts -= 40;
+  else if(sr < 100) pts -= 20;
+  else if(sr < 125) pts -= 10;
+  else if(sr < 150) pts += 0;
+  else if(sr < 175) pts += 10;
+  else if(sr < 200) pts += 20;
+  else if(sr < 250) pts += 40;
+  else if(sr < 300) pts += 60;
+  else pts += 80;
+
+}
+
+// Batting bonus
+if(runs > 200) pts += 200;
+else if(runs > 150) pts += 150;
+else if(runs > 125) pts += 125;
+else if(runs > 100) pts += 100;
+else if(runs > 75) pts += 75;
+else if(runs > 50) pts += 50;
+else if(runs > 25) pts += 25;
+
+return pts;
+
+}
+
+function calcBowl(wkts, maidens, runs, oversDec, eco) {
+
+let pts = 0;
+
+// Wickets
+pts += wkts * 25;
+
+// Wicket haul bonus
+if(wkts >= 8) pts += 175;
+else if(wkts == 7) pts += 150;
+else if(wkts == 6) pts += 125;
+else if(wkts == 5) pts += 100;
+else if(wkts == 4) pts += 75;
+else if(wkts == 3) pts += 50;
+
+// Maiden overs
+pts += maidens * 40;
+
+// Economy (min 2 overs)
+if(oversDec >= 2){
+
+  if(eco < 1) pts += 120;
+  else if(eco < 2) pts += 80;
+  else if(eco < 4) pts += 40;
+  else if(eco < 6) pts += 20;
+  else if(eco < 8) pts += 10;
+  else if(eco <= 10) pts += 0;
+  if(eco > 16) pts -= 60;
+else if(eco > 14) pts -= 40;
+else if(eco > 12) pts -= 20;
+else if(eco > 10) pts -= 10;
+
+}
+
+return pts;
+
+}
+// ── Injury Panel ──────────────────────────────────
+function renderSubInjury(t) {
+  const el = document.getElementById('sub-injury');
+  el.innerHTML = `
+    <div class="card">
+      <div class="lbl">🩹 Injury Replacement</div>
+      <div class="txt-dim fs-13" style="margin:10px 0 20px;line-height:1.7">Mark a player injured and add a replacement. All points transfer automatically.</div>
+      <div id="injury-msg" style="display:none;margin-bottom:14px"></div>
+      <div class="flex flex-col gap-14">
+        <div>
+          <div class="lbl">Team</div>
+          <select class="inp" id="inj-team" onchange="updateInjuryPlayers()">
+            <option value="">— Select team —</option>
+            ${(t.teams||[]).map(tm=>`<option value="${tm.id}">${escHtml(tm.name)}</option>`).join('')}
+          </select>
+        </div>
+        <div id="inj-player-block" style="display:none">
+          <div class="lbl">Injured Player</div>
+          <select class="inp" id="inj-player"><option value="">— Select player —</option></select>
+        </div>
+        <div id="inj-rep-block" style="display:none">
+          <div class="lbl">Replacement Player Name</div>
+          <input class="inp" id="inj-rep" placeholder="Type replacement player's full name"/>
+        </div>
+        <button class="btn btn-danger" id="inj-submit-btn" style="display:none" onclick="processInjury()">⚡ Process Replacement</button>
+      </div>
+      ${buildCurrentInjuries(t)}
+    </div>
+  `;
+}
+
+function updateInjuryPlayers() {
+  const teamId = document.getElementById('inj-team')?.value;
+  const t = getTournament();
+  const team = (t?.teams||[]).find(x=>x.id===teamId);
+  const pb = document.getElementById('inj-player-block');
+  const rb = document.getElementById('inj-rep-block');
+  const sb = document.getElementById('inj-submit-btn');
+  if(!team){ if(pb)pb.style.display='none'; if(rb)rb.style.display='none'; if(sb)sb.style.display='none'; return; }
+  const ps = document.getElementById('inj-player');
+  ps.innerHTML = '<option value="">— Select player —</option>' +
+    (team.players||[]).filter(p=>!p.isInjured).map(p=>`<option value="${p.id}">${escHtml(p.name)} (${p.totalPoints||0} pts)</option>`).join('');
+  if(pb)pb.style.display='block';
+  if(rb)rb.style.display='block';
+  if(sb)sb.style.display='block';
+}
+
+function buildCurrentInjuries(t) {
+  const injured = (t.teams||[]).flatMap(tm=>(tm.players||[]).filter(p=>p.isInjured).map(p=>({...p,teamName:tm.name})));
+  if(!injured.length) return '';
+  return `<div style="margin-top:24px"><div class="lbl">Current Injuries</div><div style="margin-top:10px">${
+    injured.map(p=>`<div class="flex jc-between" style="padding:8px 0;border-bottom:1px solid var(--bdr)"><div><span style="color:var(--err)">🩹 ${escHtml(p.name)}</span><span class="txt-dim fs-12" style="margin-left:8px">${escHtml(p.teamName)}</span></div><span class="badge" style="background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.35);color:var(--err)">injured</span></div>`).join('')
+  }</div></div>`;
+}
+
+function normalizeScorecard(apiData){
+  if(apiData.innings) return apiData; // already correct
+
+  if(apiData.scorecard){
+    return {
+      ...apiData,
+      innings: apiData.scorecard.map(sc => ({
+        batting: sc.batting || [],
+        bowling: sc.bowling || [],
+        catching: sc.catching || []
+      }))
+    };
+  }
+
+  return apiData;
+}
+function processInjury() {
+  const teamId = document.getElementById('inj-team')?.value;
+  const playerId = document.getElementById('inj-player')?.value;
+  const repName = (document.getElementById('inj-rep')?.value||'').trim();
+  const msgEl = document.getElementById('injury-msg');
+
+  if(!teamId||!playerId||!repName){ if(msgEl){msgEl.innerHTML='<div class="alert alert-err">Fill all fields.</div>';msgEl.style.display='block';} return; }
+  const t = getTournament();
+  const team = (t.teams||[]).find(x=>x.id===teamId);
+  const injured = (team?.players||[]).find(p=>p.id===playerId);
+  if(!injured) return;
+
+  const rep = {id:makeId('rep'),name:repName,originalName:repName,totalPoints:injured.totalPoints||0,battingPoints:injured.battingPoints||0,bowlingPoints:injured.bowlingPoints||0,fieldingPoints:injured.fieldingPoints||0,matchPoints:{...(injured.matchPoints||{})},isInjured:false,replacedFor:injured.name};
+  const newTeams = (t.teams||[]).map(tm=>{
+    if(tm.id!==teamId) return tm;
+    return {...tm, players:[...tm.players.map(p=>p.id===playerId?{...p,isInjured:true}:p), rep]};
+  });
+  updateTournament({...t, teams:newTeams});
+  if(msgEl){msgEl.innerHTML=`<div class="alert alert-ok">✅ ${escHtml(injured.name)} → ${escHtml(repName)}. ${injured.totalPoints||0} pts transferred.</div>`;msgEl.style.display='block';}
+  renderSubInjury(getTournament());
+}
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escAttr(s){ return String(s||'').replace(/'/g,'&#39;').replace(/"/g,'&quot;'); }
+function escId(s){ return String(s||'').replace(/[^a-zA-Z0-9]/g,'_'); }
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+document.getElementById('page-login').classList.add('active');
+
+// On load, attempt to fetch tournaments from server
+loadTournamentsFromServer().then(()=>{
+  // render current page if needed
+  if(state.page === 'user-home') renderUserHome();
+  if(state.page === 'admin-home') renderAdminHome();
+});
+</script>
+</body>
+</html>

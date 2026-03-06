@@ -1,0 +1,36 @@
+-- Run this in phpMyAdmin or mysql CLI
+CREATE DATABASE IF NOT EXISTS fantasy CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE fantasy;
+
+CREATE TABLE IF NOT EXISTS tournaments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  series_id VARCHAR(255),
+  status VARCHAR(50) DEFAULT 'active',
+  start_date DATE DEFAULT NULL,
+  created_at BIGINT DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS teams (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  tournament_id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  owner VARCHAR(255) DEFAULT NULL,
+  players_count INT DEFAULT 0,
+  FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS players (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  team_id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  original_name VARCHAR(255) DEFAULT NULL,
+  price FLOAT DEFAULT 0,
+  total_points INT DEFAULT 0,
+  batting_points INT DEFAULT 0,
+  bowling_points INT DEFAULT 0,
+  fielding_points INT DEFAULT 0,
+  match_points JSON DEFAULT NULL,
+  is_injured TINYINT(1) DEFAULT 0,
+  FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
