@@ -113,8 +113,8 @@ input,select,button{font-family:inherit}
 }
 
 #top-performers-list{
-max-height:400px;
-overflow-y:auto;
+  max-height: 700px;
+  overflow-y: auto;
 }
 
 :root {
@@ -258,107 +258,199 @@ th { background: #f1f1f1; }
     </div>
     <button onclick="openModal()" class="btn-points">View Scoring Rules</button>
 
-<div id="rulesModal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Cricket Fantasy Scoring Rules</h2>
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-        </div>
-        
-        <div class="modal-body">
-            <section class="rules-section">
-                <h3>🏏 Batting Rules</h3>
-                <table>
-                    <thead>
-                        <tr><th>Action</th><th>Points</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Run Scored</td><td>+1</td></tr>
-                        <tr><td>Boundary (Four)</td><td>+1</td></tr>
-                        <tr><td>Six</td><td>+2</td></tr>
-                        <tr><td>Dismissal as Not Out</td><td>+10</td></tr>
-                        <tr class="sub-header"><td colspan="2">Batting Milestones</td></tr>
-                        <tr><td>25 / 50 / 75 Runs</td><td>+25 / 50 / 75</td></tr>
-                        <tr><td>100 / 150 / 200 Runs</td><td>+100 / 150 / 200</td></tr>
-                    </tbody>
-                </table>
-
-                <h4>Strike Rate Bonus <small>(Min. 20 runs or 10 balls)</small></h4>
-                <table>
-                    <tbody>
-                        <tr><td>&lt; 50 SR</td><td class="neg">-60</td></tr>
-                        <tr><td>50 - 74.9 SR</td><td class="neg">-40</td></tr>
-                        <tr><td>75 - 99.9 SR</td><td class="neg">-20</td></tr>
-                        <tr><td>100 - 124.9 SR</td><td class="neg">-10</td></tr>
-                        <tr><td>125 - 150 SR</td><td>0</td></tr>
-                        <tr><td>&gt; 150 SR</td><td>+10</td></tr>
-                        <tr><td>&gt; 200 / 300 SR</td><td>+40 / +80</td></tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <section class="rules-section">
-                <h3>⚾ Bowling Rules</h3>
-                <table>
-                    <thead>
-                        <tr><th>Action</th><th>Points</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Wicket (Excl. Run Out)</td><td>+25</td></tr>
-                        <tr><td>Bonus: Bowled / LBW</td><td>+10</td></tr>
-                        <tr><td>Dot Ball</td><td>+1</td></tr>
-                        <tr><td>Maiden Over</td><td>+40</td></tr>
-                        <tr><td>Wide / No Ball</td><td class="neg">-2</td></tr>
-                        <tr class="sub-header"><td colspan="2">Wicket Hauls</td></tr>
-                        <tr><td>3 / 4 / 5 Wickets</td><td>+50 / 75 / 100</td></tr>
-                        <tr><td>6 / 7 / 8 Wickets</td><td>+125 / 150 / 175</td></tr>
-                    </tbody>
-                </table>
-
-                <h4>Economy Rate <small>(Min. 2 overs bowled)</small></h4>
-                <table>
-                    <tbody>
-                        <tr><td>Below 1.00</td><td>+120</td></tr>
-                        <tr><td>1.00 - 3.99</td><td>+40</td></tr>
-                        <tr><td>8.00 - 10.00</td><td>0</td></tr>
-                        <tr><td>Above 12.00</td><td class="neg">-20</td></tr>
-                        <tr><td>Above 16.00</td><td class="neg">-60</td></tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <section class="rules-section">
-                <h3>🧤 Fielding & Bonuses</h3>
-                <table>
-                    <tbody>
-                        <tr><td>Catch / Stumping / Direct Run Out</td><td>+10</td></tr>
-                        <tr><td>Hat-trick / Man of the Match</td><td>+100</td></tr>
-                        <tr><td>6 Sixes in an Over</td><td>+100</td></tr>
-                        <tr><td>6 Fours in an Over</td><td>+50</td></tr>
-                    </tbody>
-                </table>
-                
-                <h4>Tournament Awards</h4>
-                <table>
-                    <tbody>
-                        <tr><td>Orange / Purple Cap</td><td>+200</td></tr>
-                        <tr><td>MVP / Emerging Player</td><td>+200</td></tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <section class="rules-section multiplier">
-                <h3>⭐ Multipliers</h3>
-                <p><strong>Captain:</strong> 2x Points</p>
-                <p><strong>Vice-Captain:</strong> 1.5x Points</p>
-            </section>
-        </div>
-
-        <div class="modal-footer">
-            <button class="btn-close" onclick="closeModal()">Close</button>
-        </div>
-    </div>
-</div>
+    <div id="rulesModal" class="modal-overlay">
+      <div class="modal-content">
+      
+      <div class="modal-header">
+      <h2>Cricket Fantasy Scoring Rules</h2>
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      </div>
+      
+      <div class="modal-body">
+      
+      <!-- ================= BATTTING ================= -->
+      
+      <section class="rules-section">
+      <h3>🏏 Batting Rules</h3>
+      
+      <table>
+      <thead>
+      <tr><th>Action</th><th>Points</th></tr>
+      </thead>
+      <tbody>
+      <tr><td>Run Scored</td><td>+1</td></tr>
+      <tr><td>Four</td><td>+1</td></tr>
+      <tr><td>Six</td><td>+2</td></tr>
+      <tr><td>Player Not Out</td><td>+10</td></tr>
+      
+      <tr class="sub-header"><td colspan="2">Batting Milestones</td></tr>
+      
+      <tr><td>More than 25 Runs</td><td>+25</td></tr>
+      <tr><td>More than 50 Runs</td><td>+50</td></tr>
+      <tr><td>More than 75 Runs</td><td>+75</td></tr>
+      <tr><td>More than 100 Runs</td><td>+100</td></tr>
+      <tr><td>More than 125 Runs</td><td>+125</td></tr>
+      <tr><td>More than 150 Runs</td><td>+150</td></tr>
+      <tr><td>More than 200 Runs</td><td>+200</td></tr>
+      
+      </tbody>
+      </table>
+      
+      
+      <h4>Strike Rate Bonus <small>(Minimum 20 runs OR 10 balls faced)</small></h4>
+      
+      <table>
+      <tbody>
+      
+      <tr><td>SR &lt; 50</td><td class="neg">-60</td></tr>
+      <tr><td>50 – 74.9</td><td class="neg">-40</td></tr>
+      <tr><td>75 – 99.9</td><td class="neg">-20</td></tr>
+      <tr><td>100 – 124.9</td><td class="neg">-10</td></tr>
+      
+      <tr><td>125 – 150</td><td>0</td></tr>
+      
+      <tr><td>150 – 174.9</td><td>+10</td></tr>
+      <tr><td>175 – 199.9</td><td>+20</td></tr>
+      <tr><td>200 – 249.9</td><td>+40</td></tr>
+      <tr><td>250 – 299.9</td><td>+60</td></tr>
+      
+      <tr><td>300+</td><td>+80</td></tr>
+      
+      </tbody>
+      </table>
+      
+      </section>
+      
+      <!-- ================= BOWLING ================= -->
+      
+      <section class="rules-section">
+      
+      <h3>⚾ Bowling Rules</h3>
+      
+      <table>
+      <thead>
+      <tr><th>Action</th><th>Points</th></tr>
+      </thead>
+      
+      <tbody>
+      
+      <tr><td>Every Wicket</td><td>+25</td></tr>
+      <tr><td>Bowled / LBW Bonus</td><td>+10</td></tr>
+      <tr><td>Dot Ball</td><td>+1</td></tr>
+      <tr><td>Wide / No Ball</td><td class="neg">-2</td></tr>
+      <tr><td>Maiden Over</td><td>+40</td></tr>
+      
+      <tr class="sub-header"><td colspan="2">Wicket Hauls</td></tr>
+      
+      <tr><td>3 Wickets</td><td>+50</td></tr>
+      <tr><td>4 Wickets</td><td>+75</td></tr>
+      <tr><td>5 Wickets</td><td>+100</td></tr>
+      <tr><td>6 Wickets</td><td>+125</td></tr>
+      <tr><td>7 Wickets</td><td>+150</td></tr>
+      <tr><td>8 Wickets</td><td>+175</td></tr>
+      
+      </tbody>
+      </table>
+      
+      
+      <h4>Bowling Economy <small>(Minimum 2 overs bowled)</small></h4>
+      
+      <table>
+      <tbody>
+      
+      <tr><td>Economy &lt; 1</td><td>+120</td></tr>
+      <tr><td>Economy &lt; 2</td><td>+80</td></tr>
+      <tr><td>Economy &lt; 4</td><td>+40</td></tr>
+      <tr><td>Economy &lt; 6</td><td>+20</td></tr>
+      <tr><td>Economy &lt; 8</td><td>+10</td></tr>
+      
+      <tr><td>Economy 8 – 10</td><td>0</td></tr>
+      
+      <tr><td>Economy &gt; 10</td><td class="neg">-10</td></tr>
+      <tr><td>Economy &gt; 12</td><td class="neg">-20</td></tr>
+      <tr><td>Economy &gt; 14</td><td class="neg">-40</td></tr>
+      <tr><td>Economy &gt; 16</td><td class="neg">-60</td></tr>
+      
+      </tbody>
+      </table>
+      
+      </section>
+      
+      <!-- ================= FIELDING ================= -->
+      
+      <section class="rules-section">
+      
+      <h3>🧤 Fielding</h3>
+      
+      <table>
+      <tbody>
+      
+      <tr><td>Catch</td><td>+10</td></tr>
+      <tr><td>Direct Run Out</td><td>+10</td></tr>
+      <tr><td>Stumping</td><td>+10</td></tr>
+      
+      </tbody>
+      </table>
+      
+      </section>
+      
+      <!-- ================= OTHER BONUS ================= -->
+      
+      <section class="rules-section">
+      
+      <h3>🎯 Other Bonus</h3>
+      
+      <table>
+      <tbody>
+      
+      <tr><td>Hat-trick</td><td>+100</td></tr>
+      <tr><td>Man of the Match</td><td>+100</td></tr>
+      <tr><td>6 Sixes in an Over</td><td>+100</td></tr>
+      <tr><td>6 Fours in an Over</td><td>+50</td></tr>
+      
+      </tbody>
+      </table>
+      
+      </section>
+      
+      <!-- ================= TOURNAMENT AWARDS ================= -->
+      
+      <section class="rules-section">
+      
+      <h3>🏆 Tournament Awards</h3>
+      
+      <table>
+      <tbody>
+      
+      <tr><td>Purple Cap</td><td>+200</td></tr>
+      <tr><td>Orange Cap</td><td>+200</td></tr>
+      <tr><td>Player of the Tournament</td><td>+200</td></tr>
+      <tr><td>Emerging Player of the Tournament</td><td>+200</td></tr>
+      
+      </tbody>
+      </table>
+      
+      </section>
+      
+      <!-- ================= MULTIPLIERS ================= -->
+      
+      <section class="rules-section multiplier">
+      
+      <h3>⭐ Multipliers</h3>
+      
+      <p><strong>Captain:</strong> 2x Points</p>
+      <p><strong>Vice Captain:</strong> 1.5x Points</p>
+      
+      </section>
+      
+      </div>
+      
+      <div class="modal-footer">
+      <button class="btn-close" onclick="closeModal()">Close</button>
+      </div>
+      
+      </div>
+      </div>
     <div id="topbar-right">
       <span id="api-badge" class="badge" style="display:none"></span>
       <button id="logout-btn" class="btn btn-ghost" onclick="logout()" style="padding:6px 14px;font-size:12px;display:none">Logout</button>
@@ -579,7 +671,7 @@ th { background: #f1f1f1; }
 // STATE
 // ═══════════════════════════════════════════════════
 const ADMIN_PASS = "26";
-const API_KEY = "0685189e-95dc-4bc4-9f10-3ad78e854131";
+const API_KEY = "fef2f0de-8f68-4fa0-aa15-62d3145cf76b"; // CricAPI key for fetching live scores (replace with your own if needed)
 
 let state = {
   user: null,       // "admin" | "user"
@@ -627,42 +719,204 @@ async function apiDeleteTournament(id){
 }
 const norm = s => (s||"").toLowerCase().replace(/[^a-z]/g,"");
 
-function renderSubCaptain(t){
+// ── Weekly helpers ────────────────────────────────
+function getWeekMonday(date) {
+  const d = new Date(date);
+  const day = d.getDay(); // 0=Sun
+  const diff = (day === 0) ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d.toISOString().slice(0,10);
+}
+function getWeekSunday(date) {
+  const mon = new Date(getWeekMonday(date));
+  mon.setDate(mon.getDate() + 6);
+  return mon.toISOString().slice(0,10);
+}
+function weekKey(date) { return getWeekMonday(date); }
+function weekLabel(key) {
+  if(!key) return '';
+  const sun = getWeekSunday(key);
+  const fmt = d => {
+    const [y,m,dd] = d.split('-');
+    return `${dd} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]}`;
+  };
+  return `${fmt(key)} – ${fmt(sun)}`;
+}
+function getISOWeekNum(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+  const y = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d-y)/86400000)+1)/7);
+}
+function weekKeyFromInput(val) {
+  // val = "YYYY-Www"
+  if(!val) return weekKey(new Date());
+  const [yr, ww] = val.split('-W');
+  const year = parseInt(yr), week = parseInt(ww);
+  const jan4 = new Date(year, 0, 4);
+  const startW1 = new Date(jan4);
+  startW1.setDate(jan4.getDate() - (jan4.getDay()||7) + 1);
+  const mon = new Date(startW1);
+  mon.setDate(startW1.getDate() + (week-1)*7);
+  return mon.toISOString().slice(0,10);
+}
 
-const el=document.getElementById("sub-captain");
+function renderSubCaptain(t) {
+  const el = document.getElementById('sub-captain');
+  const wc = t.weeklyCaptains || {};
+  const weeks = Object.keys(wc).sort().reverse();
+  const todayKey = weekKey(new Date());
+  const todayWeekNum = String(getISOWeekNum(new Date())).padStart(2,'0');
+  const todayYear = new Date().getFullYear();
 
-const players=t.teams.flatMap(tm=>
-  tm.players.map(p=>({...p,team:tm.name,teamId:tm.id}))
-);
+  // Build history rows
+  const historyRows = weeks.flatMap(wk =>
+    Object.entries(wc[wk]||{}).map(([teamId, sel]) => {
+      const team = (t.teams||[]).find(x=>x.id===teamId);
+      const cap  = (team?.players||[]).find(p=>p.id===sel.captain);
+      const vc   = (team?.players||[]).find(p=>p.id===sel.vc);
+      if(!cap) return '';
+      return `
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surf1);border-radius:10px;margin-bottom:6px">
+          <div style="flex:1">
+            <div style="font-size:11px;color:var(--dim);margin-bottom:4px">
+              📅 ${escHtml(weekLabel(wk))} &nbsp;·&nbsp; 👤 ${escHtml(team?.owner||team?.name||'')}
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <span style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:8px;background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3)">
+                ⭐ C: ${escHtml(cap?.name||'')}
+              </span>
+              <span style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:8px;background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3)">
+                🔰 VC: ${escHtml(vc?.name||sel.vc)}
+              </span>
+            </div>
+          </div>
+          <button onclick="deleteCaptainEntry('${escHtml(wk)}','${teamId}')"
+            style="background:none;border:1px solid var(--bdr);border-radius:8px;padding:5px 10px;cursor:pointer;color:var(--dim);font-size:13px"
+            title="Remove">✕</button>
+        </div>`;
+    })
+  ).join('');
 
-el.innerHTML=`
-<div class="card">
+  el.innerHTML = `
+    <div class="card">
+      <div class="lbl">⭐ Weekly Captain & Vice-Captain</div>
+      <div style="background:var(--accd);border:1px solid var(--bdra);border-radius:10px;padding:12px 16px;margin:10px 0 18px;font-size:13px;color:var(--dim)">
+        Captain earns <b style="color:var(--acc)">2×</b> points · Vice-captain earns <b style="color:var(--acc)">1.5×</b> points —
+        applied only to matches played <b style="color:var(--txt)">within that Mon–Sun week</b>.
+        Admin sets this <b style="color:var(--txt)">once per week</b> per team.
+      </div>
 
-<div class="lbl">⭐ Weekly Captain Selection</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div>
+          <div class="lbl fs-11">📅 Week (Mon – Sun)</div>
+          <input type="week" id="cap-week-input" class="inp" style="margin-top:6px"
+            value="${todayYear}-W${todayWeekNum}"
+            onchange="onCapWeekChange()"/>
+          <div id="cap-week-label" class="fs-11 txt-dim" style="margin-top:5px">${weekLabel(todayKey)}</div>
+        </div>
+        <div>
+          <div class="lbl fs-11">🏏 Fantasy Team</div>
+          <select class="inp" id="cap-team" style="margin-top:6px" onchange="updateCaptainPlayers()">
+            <option value="">— select team —</option>
+            ${(t.teams||[]).map(tm=>`<option value="${tm.id}">${escHtml(tm.name)}${tm.owner&&norm(tm.owner)!==norm(tm.name)?' ('+escHtml(tm.owner)+')':''}</option>`).join('')}
+          </select>
+        </div>
+      </div>
 
-<div class="flex gap-12 mt-10">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#fbbf24;margin-bottom:6px">⭐ Captain &nbsp;<span style="color:var(--dim);font-weight:400">(2× pts)</span></div>
+          <select class="inp" id="cap-player"><option value="">— pick team first —</option></select>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#a78bfa;margin-bottom:6px">🔰 Vice-Captain &nbsp;<span style="color:var(--dim);font-weight:400">(1.5× pts)</span></div>
+          <select class="inp" id="vc-player"><option value="">— pick team first —</option></select>
+        </div>
+      </div>
 
-<select class="inp" id="cap-team" onchange="updateCaptainPlayers()">
-<option value="">Select Team</option>
-${t.teams.map(tm=>`
-<option value="${tm.id}">
-${tm.name}
-</option>`).join("")}
-</select>
+      <button class="btn btn-success" onclick="saveCaptain()" style="width:100%;font-size:14px">
+        💾 Save Captain for this Week
+      </button>
+    </div>
 
-<select class="inp" id="cap-player"></select>
+    ${weeks.length ? `
+      <div class="card" style="margin-top:16px">
+        <div class="lbl">📋 Captain History</div>
+        <div style="margin-top:12px">${historyRows || '<div class="txt-dim fs-12">No captains set yet.</div>'}</div>
+      </div>` : ''}
+  `;
+}
 
-<select class="inp" id="vc-player"></select>
+function onCapWeekChange() {
+  const val = document.getElementById('cap-week-input')?.value;
+  const key = weekKeyFromInput(val);
+  const lbl = document.getElementById('cap-week-label');
+  if(lbl) lbl.textContent = weekLabel(key);
+  updateCaptainPlayers(); // pre-fill if already saved
+}
 
-<button class="btn btn-success" onclick="saveCaptain()">
-Save
-</button>
+function updateCaptainPlayers() {
+  const teamId  = document.getElementById('cap-team')?.value;
+  const wkVal   = document.getElementById('cap-week-input')?.value;
+  const capSel  = document.getElementById('cap-player');
+  const vcSel   = document.getElementById('vc-player');
+  if(!capSel || !vcSel) return;
+  const t = getTournament();
+  const team = (t.teams||[]).find(x=>x.id===teamId);
+  if(!team) {
+    capSel.innerHTML = '<option value="">— pick team first —</option>';
+    vcSel.innerHTML  = '<option value="">— pick team first —</option>';
+    return;
+  }
+  const wkKey   = weekKeyFromInput(wkVal);
+  const existing = ((t.weeklyCaptains||{})[wkKey]||{})[teamId] || {};
+  const opts = p => team.players.map(pl =>
+    `<option value="${pl.id}" ${pl.id===p?'selected':''}>${escHtml(pl.name)}</option>`
+  ).join('');
+  capSel.innerHTML = opts(existing.captain);
+  vcSel.innerHTML  = opts(existing.vc);
+}
 
-</div>
+function saveCaptain() {
+  const teamId  = document.getElementById('cap-team')?.value;
+  const capId   = document.getElementById('cap-player')?.value;
+  const vcId    = document.getElementById('vc-player')?.value;
+  const wkVal   = document.getElementById('cap-week-input')?.value;
+  if(!teamId || !capId || !vcId) { alert('Select team, captain and vice-captain'); return; }
+  if(capId === vcId) { alert('Captain and Vice-Captain must be different players'); return; }
+  const wkKey  = weekKeyFromInput(wkVal);
+  const t      = getTournament();
+  const team   = (t.teams||[]).find(x=>x.id===teamId);
+  const cap    = (team?.players||[]).find(p=>p.id===capId);
+  const vc     = (team?.players||[]).find(p=>p.id===vcId);
+  const updated = { ...t,
+    weeklyCaptains: { ...(t.weeklyCaptains||{}),
+      [wkKey]: { ...((t.weeklyCaptains||{})[wkKey]||{}), [teamId]: { captain:capId, vc:vcId } }
+    }
+  };
+  updateTournament(updated);
+  renderSubCaptain(getTournament());
+  renderLeaderboard(getTournament());
+  // Toast
+  const toast = document.createElement('div');
+  toast.style.cssText='position:fixed;top:24px;left:50%;transform:translateX(-50%);background:#10b981;color:#fff;padding:12px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4)';
+  toast.textContent = `✅ ${cap?.name||'Captain'} (C) · ${vc?.name||'VC'} — Week ${weekLabel(wkKey)}`;
+  document.body.appendChild(toast);
+  setTimeout(()=>toast.remove(), 3200);
+}
 
-</div>
-`;
-
+function deleteCaptainEntry(wkKey, teamId) {
+  if(!confirm('Remove this captain selection?')) return;
+  const t = getTournament();
+  const newWc = JSON.parse(JSON.stringify(t.weeklyCaptains||{}));
+  if(newWc[wkKey]) {
+    delete newWc[wkKey][teamId];
+    if(!Object.keys(newWc[wkKey]).length) delete newWc[wkKey];
+  }
+  updateTournament({...t, weeklyCaptains:newWc});
+  renderSubCaptain(getTournament());
+  renderLeaderboard(getTournament());
 }
 // ═══════════════════════════════════════════════════
 // NAVIGATION
@@ -1163,30 +1417,7 @@ const KNOWN = [
 
 
 
-function updateCaptainPlayers(){
-
-const teamId = document.getElementById("cap-team").value;
-const t = getTournament();
-
-const team = (t.teams || []).find(x => x.id === teamId);
-
-const capSel = document.getElementById("cap-player");
-const vcSel = document.getElementById("vc-player");
-
-if(!team){
-capSel.innerHTML = "";
-vcSel.innerHTML = "";
-return;
-}
-
-const options = team.players.map(p => `
-<option value="${p.id}">${p.name}</option>
-`).join("");
-
-capSel.innerHTML = options;
-vcSel.innerHTML = options;
-
-}
+// updateCaptainPlayers moved into renderSubCaptain block
 
 function fuzzySuggest(name) {
   const nn = norm(name);
@@ -1398,87 +1629,104 @@ function switchTab(tab) {
 // ── Leaderboard ───────────────────────────────────
 function renderLeaderboard(t) {
   const teams = t.teams||[];
-  const ranked = [...teams]
-    .map(tm=>({...tm, total:(tm.players||[]).reduce((s,p)=>{
-
-let pts=p.totalPoints||0;
-
-const wc=t.weeklyCaptains||{};
-let multiplier = 1;
-
-Object.values(wc).forEach(week=>{
-  Object.values(week).forEach(sel=>{
-    if(p.id===sel.captain) multiplier = Math.max(multiplier,2);
-    if(p.id===sel.vc) multiplier = Math.max(multiplier,1.5);
-  });
-});
-
-pts *= multiplier;
-
-return s+pts;
-
-},0)}))
-    .sort((a,b)=>b.total-a.total);
+  // ── Weekly-scoped captain multiplier ─────────────────────────
+  // Captain/VC bonus applies ONLY to match points earned in that Mon-Sun week.
+  // Each match has a date; we look up which week it falls in, then check
+  // whether the player was C/VC for that week and apply 2× or 1.5× per match.
+  function playerTotalWithCap(player) {
     const wc = t.weeklyCaptains || {};
+    const matches = t.matches || [];
+    // Map matchId → weekKey (Monday date)
+    const matchWeek = {};
+    matches.forEach(m => { if(m.date) matchWeek[m.id] = weekKey(new Date(m.date)); });
+    // Map weekKey → boost for this player
+    const boostForWeek = {};
+    Object.entries(wc).forEach(([wk, teamSels]) => {
+      Object.values(teamSels).forEach(sel => {
+        if(player.id === sel.captain) boostForWeek[wk] = Math.max(boostForWeek[wk]||1, 2);
+        else if(player.id === sel.vc) boostForWeek[wk] = Math.max(boostForWeek[wk]||1, 1.5);
+      });
+    });
+    const mp = player.matchPoints || {};
+    let total = 0;
+    Object.entries(mp).forEach(([matchId, pts]) => {
+      const raw = (pts.batting||0) + (pts.bowling||0) + (pts.fielding||0);
+      const wk  = matchWeek[matchId];
+      total += raw * (boostForWeek[wk] || 1);
+    });
+    // Fallback for players with totalPoints but no matchPoints breakdown
+    if(!Object.keys(mp).length) total = player.totalPoints || 0;
+    return Math.round(total * 10) / 10;
+  }
 
-const allP = teams.flatMap(tm=>
-(tm.players||[]).map(p=>{
+  // Captain badge: latest week where player is C or VC
+  function captainBadge(playerId) {
+    const wc = t.weeklyCaptains || {};
+    const sortedWks = Object.keys(wc).sort().reverse();
+    for(const wk of sortedWks) {
+      for(const sel of Object.values(wc[wk]||{})) {
+        if(playerId === sel.captain) return 'C';
+        if(playerId === sel.vc)      return 'VC';
+      }
+    }
+    return null;
+  }
 
-let pts = p.totalPoints || 0;
-let multiplier = 1;
+  const ranked = [...teams]
+    .map(tm => ({
+      ...tm,
+      total: (tm.players||[]).reduce((s,p) => s + playerTotalWithCap(p), 0)
+    }))
+    .sort((a,b) => b.total - a.total);
 
-Object.values(wc).forEach(week=>{
-Object.values(week).forEach(sel=>{
-if(p.id===sel.captain) multiplier = Math.max(multiplier,2);
-if(p.id===sel.vc) multiplier = Math.max(multiplier,1.5);
-});
-});
-
-return {...p,teamName:tm.name,totalWithCap:pts*multiplier};
-
-})
-).sort((a,b)=>b.totalWithCap-a.totalWithCap);
+  const allP = teams.flatMap(tm =>
+    (tm.players||[]).map(p => ({
+      ...p,
+      teamName:   tm.name,
+      ownerName:  tm.owner || tm.name,
+      cricketTeam: p.cricketTeam || p.country || '',
+      capBadge:   captainBadge(p.id),
+      totalWithCap: playerTotalWithCap(p)
+    }))
+  ).sort((a,b) => b.totalWithCap - a.totalWithCap);
 
   // Top performers
   const medals = ['🥇','🥈','🥉'];
   const tpBlock = document.getElementById('top-performers');
-  const tpList = document.getElementById('top-performers-list');
+  const tpList  = document.getElementById('top-performers-list');
   if(allP.length) {
-    tpBlock.style.display='block';
-    tpList.innerHTML = allP.map((p,i)=>{
-      const medalColor = ['var(--gold)','var(--silver)','var(--bronze)'][i]||'var(--dim)';
-      const ownerDifferent = p.owner && norm(p.owner) !== norm(p.teamName);
-      const ownerHtml = ownerDifferent ? `<div>${escHtml(p.owner)}</div>` : '';
-      const teamHtml = `<div style="color:var(--dim);font-size:12px;margin-top:2px">${escHtml(p.teamName)}</div>`;
-      const points = p.totalWithCap || p.totalPoints || 0;
+    tpBlock.style.display = 'block';
+    tpList.innerHTML = allP.map((p,i) => {
+      const medalColor = ['var(--gold)','var(--silver)','var(--bronze)'][i] || 'var(--dim)';
+      const pts        = p.totalWithCap || p.totalPoints || 0;
+      // C/VC badge pill
+      const badge = p.capBadge ? `<span style="display:inline-flex;align-items:center;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;margin-right:6px;${p.capBadge==='C'?'background:rgba(251,191,36,.2);color:#fbbf24;border:1px solid rgba(251,191,36,.4)':'background:rgba(139,92,246,.2);color:#a78bfa;border:1px solid rgba(139,92,246,.35)'}">${p.capBadge}</span>` : '';
+      // National team line
+      const natLine = p.cricketTeam
+        ? `<div style="font-size:12px;color:var(--dim);margin-top:3px">🏏 ${escHtml(p.cricketTeam)}</div>` : '';
+      // Fantasy owner (always show, no duplication)
+      const ownerLine = `<div style="font-size:12px;color:var(--acc);margin-top:2px">👤 ${escHtml(p.ownerName||p.teamName)}</div>`;
       return `
-      <div class="flex items-center gap-12" style="padding:10px 0;border-bottom:1px solid var(--bdr)">
-        <span style="font-size:18px;width:28px;text-align:center;font-weight:900;color:${medalColor}">
-          ${medals[i]||i+1}
-        </span>
-        <div class="flex-1">
-          <div class="fw-700 txt-main">${escHtml(p.name)}</div>
-          <div class="fs-11 txt-dim" style="margin-top:6px">
-            ${ownerHtml}
-            <div style="color:var(--dim);font-size:12px;margin-top:2px">
-              ${escHtml(p.teamName)}${p.teamName? ' · ': ''}
-              ${p.country ? `<span class="txt-dim">${escHtml(p.country)}</span>` : `<span class="tp-country" data-player-name="${escAttr(p.name)}" id="tp-country-${i}">...</span>`}
+        <div class="flex items-center gap-12" style="padding:11px 0;border-bottom:1px solid var(--bdr)">
+          <span style="font-size:20px;min-width:28px;text-align:center;font-weight:900;color:${medalColor}">
+            ${medals[i]||i+1}
+          </span>
+          <div class="flex-1" style="min-width:0">
+            <div class="fw-700 txt-main" style="font-size:14px;display:flex;align-items:center;flex-wrap:wrap">
+              ${badge}${escHtml(p.name)}
             </div>
+            ${natLine}
+            ${ownerLine}
           </div>
-        </div>
-        <div class="ta-right">
-          <div class="txt-acc fw-800" style="font-size:18px">${points}</div>
-          <div class="fs-10 txt-dim">pts</div>
-        </div>
-      </div>
-    `;
+          <div class="ta-right" style="flex-shrink:0">
+            <div class="txt-acc fw-800" style="font-size:18px">${pts}</div>
+            <div class="fs-10 txt-dim">pts</div>
+          </div>
+        </div>`;
     }).join('');
   } else {
-    tpBlock.style.display='none';
+    tpBlock.style.display = 'none';
   }
-
-  // After rendering the top performers, asynchronously populate country/team names
-  setTimeout(populateTopPerformerCountries, 10);
 
   // Standings
   const standList = document.getElementById('standings-list');
@@ -1486,16 +1734,17 @@ return {...p,teamName:tm.name,totalWithCap:pts*multiplier};
   standList.innerHTML = '';
   const leaderPoints = ranked[0]?.total || 0;
 
-ranked.forEach((team,i) => {
+  ranked.forEach((team,i) => {
+    const isLeader  = i === 0;
+    const diff      = leaderPoints - (team.total||0);
+    const rankColor = isLeader ? '#10b981' : '#f87171';
+    const statusLbl = isLeader
+      ? '🟢 Leader'
+      : `🔴 ${diff % 1 === 0 ? diff : diff.toFixed(1)} pts behind`;
+    const ownerTag  = team.owner && norm(team.owner)!==norm(team.name)
+      ? `<span style="color:var(--acc)">👤 ${escHtml(team.owner)}</span>` : '';
+    const displayTotal = (team.total||0) % 1 === 0 ? (team.total||0) : (team.total||0).toFixed(1);
 
-let leadText = "";
-
-if(i === 0){
-leadText = "Leader";
-}else{
-const diff = leaderPoints - team.total;
-leadText = diff + " pts behind";
-}
     const row = document.createElement('div');
     row.className = 'team-row';
     row.innerHTML = `
@@ -1504,36 +1753,69 @@ leadText = diff + " pts behind";
       </span>
       <div class="flex-1">
         <div class="fw-800 txt-main" style="font-size:16px">${escHtml(team.name)}</div>
-        <div class="fs-11 txt-dim">${team.players?.length||0} players · ${leadText}${team.owner && norm(team.owner)!==norm(team.name) ? ` · <span style="color:var(--acc)">👤 ${escHtml(team.owner)}</span>` : ''}</div>
+        <div style="margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:11px;font-weight:700;color:${rankColor}">${statusLbl}</span>
+          ${ownerTag ? `<span class="fs-11">${ownerTag}</span>` : ''}
+        </div>
       </div>
       <div class="ta-right" style="margin-right:10px">
-        <div class="txt-acc fw-800" style="font-size:22px">${team.total||0}</div>
+        <div style="font-size:22px;font-weight:800;color:${rankColor}">${displayTotal}</div>
         <div class="fs-10 txt-dim">TOTAL PTS</div>
       </div>
       <span class="txt-dim fs-13" id="arrow-${i}">▼</span>
     `;
+
+    // ── Expanded: group players by national cricket team ──
     const detail = document.createElement('div');
-    detail.style.cssText = 'display:none;padding-left:46px;padding-bottom:12px';
-    const sortedP = [...(team.players||[])].sort((a,b)=>(b.totalPoints||0)-(a.totalPoints||0));
-    detail.innerHTML = sortedP.map(p=>`
-      <div class="player-row">
-        ${p.isInjured?'<span>🩹</span>':''}
-        <div class="flex-1">
-          <div class="${p.isInjured?'txt-dim':'txt-main'} fw-600" style="font-size:14px;${p.isInjured?'text-decoration:line-through':''}">
-            ${escHtml(p.name)}${p.price?`<span style="font-size:10px;color:var(--warn);margin-left:6px;font-weight:400">${p.price}Cr</span>`:''}
-            ${p.country?` <span class="txt-dim" style="font-size:12px;margin-left:8px">· ${escHtml(p.country)}</span>`:''}
+    detail.style.cssText = 'display:none;padding:0 0 14px 46px';
+
+    const groupMap = {};
+    (team.players||[]).forEach(p => {
+      const nat = p.cricketTeam || p.country || '—';
+      if(!groupMap[nat]) groupMap[nat] = [];
+      groupMap[nat].push(p);
+    });
+    const groupKeys = Object.keys(groupMap).sort((a,b) => {
+      if(a==='—') return 1; if(b==='—') return -1;
+      return a.localeCompare(b);
+    });
+    groupKeys.forEach(g => groupMap[g].sort((a,b) => playerTotalWithCap(b)-playerTotalWithCap(a)));
+
+    detail.innerHTML = groupKeys.map(nat => {
+      const natLabel = nat === '—' ? 'Other / Unknown' : nat;
+      const playerRows = groupMap[nat].map(p => {
+        const badge = captainBadge(p.id);
+        const badgePill = badge
+          ? `<span style="font-size:9px;font-weight:800;padding:1px 5px;border-radius:5px;margin-right:5px;${badge==='C'?'background:rgba(251,191,36,.2);color:#fbbf24':'background:rgba(139,92,246,.2);color:#a78bfa'}">${badge}</span>`
+          : '';
+        const pPts = playerTotalWithCap(p);
+        return `
+          <div class="player-row" style="${p.isInjured?'opacity:.5':''}">
+            ${p.isInjured ? '<span style="font-size:13px">🩹</span>' : ''}
+            <div class="flex-1">
+              <div class="${p.isInjured?'txt-dim':'txt-main'} fw-600" style="font-size:14px;${p.isInjured?'text-decoration:line-through':''}">
+                ${badgePill}${escHtml(p.name)}${p.price?`<span style="font-size:10px;color:var(--warn);margin-left:6px;font-weight:400">${p.price}Cr</span>`:''}
+              </div>
+              <div class="fs-11 txt-dim">🏏 ${p.battingPoints||0} · ⚾ ${p.bowlingPoints||0} · 🧤 ${p.fieldingPoints||0}</div>
+            </div>
+            <span style="color:#7dd3fc;font-weight:700;font-size:15px">${pPts}</span>
+          </div>`;
+      }).join('');
+      return `
+        <div style="margin-top:10px">
+          <div style="font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--acc);padding:4px 0 5px;border-bottom:1px solid var(--bdr);margin-bottom:4px">
+            🏏 ${escHtml(natLabel)}
           </div>
-          <div class="fs-11 txt-dim">🏏 ${p.battingPoints||0} · ⚾ ${p.bowlingPoints||0} · 🧤 ${p.fieldingPoints||0}</div>
-        </div>
-        <span style="color:#7dd3fc;font-weight:700;font-size:15px">${p.totalPoints||0}</span>
-      </div>
-    `).join('');
-    let open=false;
-    row.onclick = ()=>{
-      open=!open;
-      detail.style.display=open?'block':'none';
-      const arr=document.getElementById('arrow-'+i);
-      if(arr) arr.textContent=open?'▲':'▼';
+          ${playerRows}
+        </div>`;
+    }).join('');
+
+    let open = false;
+    row.onclick = () => {
+      open = !open;
+      detail.style.display = open ? 'block' : 'none';
+      const arr = document.getElementById('arrow-'+i);
+      if(arr) arr.textContent = open ? '▲' : '▼';
     };
     standList.appendChild(row);
     standList.appendChild(detail);
@@ -1619,7 +1901,7 @@ function showMatchDetail(matchId) {
         <div class="flex gap-10" style="padding:8px 0;border-bottom:1px solid var(--bdr)">
           <div class="flex-1">
             <div class="fw-600 txt-main">${escHtml(p.name)}</div>
-            <div class="fs-11 txt-dim">🏏 Bat ${mp.batting||0} · 🎳 Bowl ${mp.bowling||0} · 🧤 Field ${mp.fielding||0}</div>
+            <div class="fs-11 txt-dim">🏏 Bat ${mp.batting||0} · ⚾ Bowl ${mp.bowling||0} · 🧤 Field ${mp.fielding||0}</div>
           </div>
           <span class="txt-acc fw-700" style="font-size:15px">${tot}</span>
         </div>
@@ -1645,37 +1927,7 @@ function switchSubTab(sub) {
   });
 }
 
-function saveCaptain(){
-
-const teamId = document.getElementById("cap-team").value;
-const cap = document.getElementById("cap-player").value;
-const vc = document.getElementById("vc-player").value;
-
-if(!teamId || !cap || !vc){
-alert("Select team captain and vice captain");
-return;
-}
-
-const t = getTournament();
-
-const week = "week"+(Object.keys(t.weeklyCaptains||{}).length || 1);
-
-const updated = {
-...t,
-weeklyCaptains:{
-...(t.weeklyCaptains||{}),
-[week]:{
-...(t.weeklyCaptains?.[week]||{}),
-[teamId]:{ captain:cap, vc:vc }
-}
-}
-};
-
-updateTournament(updated);
-
-alert("Captain saved");
-
-}
+// saveCaptain moved into renderSubCaptain block
 function renderManage(t){
   renderSubUpload(t);
   renderSubScores(t);
@@ -2089,13 +2341,15 @@ async function fetchScores() {
         updated = applyMatch(updated, match, normalized);
         const ptsAfter = updated.teams.flatMap(t=>t.players).reduce((s,p)=>s+(p.totalPoints||0),0);
         const newPts = ptsAfter - ptsBefore;
-        const innings = sc.data.innings||[];
+        // Use normalized innings (covers both scorecard[] and innings[] formats)
+        const innings = normalized.innings||[];
         if(!innings.length) {
-          addScoreLog(`  ⚠️ Scorecard has 0 innings — API may not have detailed data yet`, 'var(--warn)');
+          addScoreLog(`  ⚠️ Scorecard has 0 innings — API may not have data yet`, 'var(--warn)');
         } else {
-          const batRows  = innings.reduce((s,i)=>s+(i.batting||[]).length,0);
-          const bowlRows = innings.reduce((s,i)=>s+(i.bowling||[]).length,0);
-          addScoreLog(`  ✅ ${innings.length} innings · ${batRows} bat rows · ${bowlRows} bowl rows · +${newPts} pts added`, 'var(--ok)');
+          const batRows   = innings.reduce((s,i)=>s+(i.batting||[]).length,0);
+          const bowlRows  = innings.reduce((s,i)=>s+(i.bowling||[]).length,0);
+          const fieldRows = innings.reduce((s,i)=>s+(i.catching||[]).length,0);
+          addScoreLog(`  ✅ ${innings.length} innings · ${batRows} bat · ${bowlRows} bowl · ${fieldRows} field · +${newPts} pts`, 'var(--ok)');
         }
       } else if(sc?.status === 'failure') {
         addScoreLog(`  ❌ API: ${sc.reason||'unknown error'}`, 'var(--err)');
@@ -2141,8 +2395,6 @@ function recordMatchOnly(tournament, matchInfo) {
 
 function applyMatch(tournament, matchInfo, scorecard) {
   const mid = matchInfo.id;
-
-  // Build a debug log for this match (shown in console)
   const dbg = [];
 
   const updatedTeams = (tournament.teams||[]).map(team => ({
@@ -2152,64 +2404,58 @@ function applyMatch(tournament, matchInfo, scorecard) {
       const pn = norm(player.name);
       let bat = 0, bowl = 0, field = 0;
       let foundBat = false, foundBowl = false;
+      let cricketTeam = player.cricketTeam || '';
 
       (scorecard.innings||[]).forEach(inn => {
+        // "India Inning 1" → "India"
+        const innTeam = (inn.inning||'').replace(/\s*(\d+\w*)?\s*(inning|innings).*/i,'').trim();
 
-        // ── BATTING ─────────────────────────────────────
+        // ── BATTING ──────────────────────────────────────────────
         (inn.batting||[]).forEach(b => {
-          // API: batsman is under b.batsman.name (object) or directly b.name (flat)
           const bname = norm(b.batsman?.name || b.name || '');
           if(bname !== pn) return;
           foundBat = true;
-          const runs  = +(b.r  ?? b.runs   ?? 0);
-          const balls = +(b.b  ?? b.balls  ?? 0);
+          if(!cricketTeam && innTeam) cricketTeam = innTeam;
+          const runs  = +(b.r  ?? b.runs  ?? 0);
+          const balls = +(b.b  ?? b.balls ?? 0);
           const fours = +(b['4s'] ?? b.fours ?? 0);
           const sixes = +(b['6s'] ?? b.sixes ?? 0);
-          // Duck: only if batsman actually faced a ball
+          // Use API-provided SR; fallback to calculated
+          const sr    = b.sr ? parseFloat(b.sr) : (balls > 0 ? (runs/balls)*100 : 0);
           const duck  = runs === 0 && balls > 0;
-          const notOut = (
-            (b.dismissal || "") +
-            (b["dismissal-text"] || "")
-          ).toLowerCase().includes("not out");
-
-          bat += calcBat(runs, balls, fours, sixes, duck, notOut);
-          dbg.push(`BAT ${player.name}: ${runs}(${balls}) 4s:${fours} 6s:${sixes} = ${bat}pts`);
+          const notOut= ((b.dismissal||'')+(b['dismissal-text']||'')).toLowerCase().includes('not out');
+          bat += calcBat(runs, balls, fours, sixes, sr, duck, notOut);
+          dbg.push(`BAT ${player.name}: ${runs}(${balls}) SR:${sr.toFixed(1)} 4s:${fours} 6s:${sixes} = ${bat}pts`);
         });
 
-        // ── BOWLING ──────────────────────────────────────
+        // ── BOWLING ──────────────────────────────────────────────
         (inn.bowling||[]).forEach(bw => {
           const bwname = norm(bw.bowler?.name || bw.name || '');
           if(bwname !== pn) return;
           foundBowl = true;
-          const wkts   = +(bw.w  ?? bw.wickets ?? 0);
-          const maiden = +(bw.m  ?? bw.maidens ?? 0);
-          const runs_g = +(bw.r  ?? bw.runs    ?? 0);
-          // Overs come as "3.4" = 3 overs 4 balls. Convert to decimal properly.
-          const oversStr = String(bw.o ?? bw.overs ?? '0');
-          const oversDec = parseOvers(oversStr);
-          // Economy: use API-provided eco if available, else calculate
-          const eco = bw.eco ? parseFloat(bw.eco) : (oversDec > 0 ? runs_g / oversDec : 0);
+          const wkts    = +(bw.w  ?? bw.wickets ?? 0);
+          const maiden  = +(bw.m  ?? bw.maidens ?? 0);
+          const runs_g  = +(bw.r  ?? bw.runs    ?? 0);
+          const oversStr= String(bw.o ?? bw.overs ?? '0');
+          const oversDec= parseOvers(oversStr);
+          const eco     = bw.eco ? parseFloat(bw.eco) : (oversDec > 0 ? runs_g/oversDec : 0);
           bowl += calcBowl(wkts, maiden, runs_g, oversDec, eco);
           dbg.push(`BOWL ${player.name}: ${wkts}w ${maiden}m ${runs_g}r ${oversStr}ov eco:${eco.toFixed(2)} = ${bowl}pts`);
         });
 
-        // ── FIELDING ─────────────────────────────────────
-        // Use ONLY fielders[] array — never fall back to string matching
-        // (dismissal string "c X b Y" contains bowler name Y which would wrongly match)
-        // FIELDING (from catching array)
-        (inn.catching || []).forEach(c => {
-
-          const cname = norm(c.catcher?.name || c.name || "");
+        // ── FIELDING — from catching[] (confirmed by GAS script) ─────
+        // GAS fields: catcher.name, catch, runout, stumped, lbw, bowled
+        // lbw + bowled = no fielding pts (no physical dismissal action by fielder)
+        (inn.catching||[]).forEach(c => {
+          const cname = norm(c.catcher?.name || c.name || '');
           if(cname !== pn) return;
-
-          const catches = +(c.catch || 0);
-          const stump   = +(c.stumped || 0);
-          const runout  = +(c.runout || 0);
-
-          field += catches * 10;
-          field += stump * 10;
-          field += runout * 10;
-
+          const catches   = +(c.catch   || 0);
+          const runouts   = +(c.runout  || 0);
+          const stumpings = +(c.stumped || 0);
+          field += catches   * 10;   // catch  = 10pts
+          field += runouts   * 10;   // run-out = 10pts
+          field += stumpings * 15;   // stumping = 15pts (harder, more skill)
+          dbg.push(`FIELD ${player.name}: ${catches}c ${runouts}ro ${stumpings}st = +${catches*10+runouts*10+stumpings*15}pts`);
         });
       });
 
@@ -2220,6 +2466,7 @@ function applyMatch(tournament, matchInfo, scorecard) {
       const mp = { batting: bat, bowling: bowl, fielding: field };
       return {
         ...player,
+        cricketTeam,
         matchPoints:    { ...(player.matchPoints||{}), [mid]: mp },
         battingPoints:  (player.battingPoints||0)  + bat,
         bowlingPoints:  (player.bowlingPoints||0)  + bowl,
@@ -2232,7 +2479,7 @@ function applyMatch(tournament, matchInfo, scorecard) {
   const already = (tournament.matches||[]).find(m => m.id === mid);
   const newMatches = already
     ? tournament.matches.map(m => m.id === mid
-        ? { ...m, status:'completed', result: matchInfo.status, teamInfo: matchInfo.teamInfo||m.teamInfo||[] }
+        ? { ...m, status:'completed', result:matchInfo.status, teamInfo:matchInfo.teamInfo||m.teamInfo||[] }
         : m)
     : [...(tournament.matches||[]), {
         id:       mid,
@@ -2255,52 +2502,48 @@ function parseOvers(oversStr) {
   return fullOvers + (balls / 6);
 }
 
-function calcBat(runs, balls, fours, sixes, duck, notOut=false) {
+function calcBat(runs, balls, fours, sixes, sr, duck, notOut=false) {
+  // Exactly matches GAS sheet formulas:
+  // J  = duck (faced ball, 0 runs) → -10, else runs * 1  (1pt/run)
+  // K  = cumulative milestones: +25 at each of 25,50,75,100,125,150,175,200 crossed
+  // L  = SR bonus/penalty (GAS formula exactly, using API-provided SR)
+  // M  = L if balls >= 25, else 0   (GAS: IF(balls>=25, L, 0))
+  // N  = fours * 1
+  // O  = sixes * 2
+  // Total = J + K + M + N + O
 
-let pts = 0;
+  // J — base
+  const J = duck ? -10 : runs;
 
-// Runs
-pts += runs;
+  // K — cumulative milestone bonus
+  let K = 0;
+  for(const t of [25,50,75,100,125,150,175,200]) { if(runs >= t) K += 25; }
 
-// Duck
-if(duck) pts -= 10;
+  // L — SR bonus/penalty decoded from GAS:
+  // IF(SR<75,-20,0)+IF(SR<100,-10,0)+IF(SR<=125,-10,0)+IF(SR<=150,0)
+  // +IF(SR>=150,10)+IF(SR>=175,10)+IF(SR>=200,20)+IF(SR>=250,20)
+  // +IF(SR>=300,20)+IF(SR>=350,20)+IF(SR>=400,20)
+  let L = 0;
+  if(sr < 75)  L += -20;
+  if(sr < 100) L += -10;
+  if(sr <= 125) L += -10;
+  // 126-149: no change
+  if(sr >= 150) L += 10;
+  if(sr >= 175) L += 10;
+  if(sr >= 200) L += 20;
+  if(sr >= 250) L += 20;
+  if(sr >= 300) L += 20;
+  if(sr >= 350) L += 20;
+  if(sr >= 400) L += 20;
 
-// Not out bonus
-if(notOut) pts += 10;
+  // M — SR bonus only if 25+ balls faced
+  const M = balls >= 25 ? L : 0;
 
-// Boundaries
-pts += fours * 1;
-pts += sixes * 2;
+  // N, O — boundaries
+  const N = fours * 1;
+  const O = sixes * 2;
 
-// Strike rate (only if 20 runs OR 10 balls)
-if(runs >= 20 || balls >= 10) {
-
-  const sr = (runs / balls) * 100;
-
-  if(sr < 50) pts -= 60;
-  else if(sr < 75) pts -= 40;
-  else if(sr < 100) pts -= 20;
-  else if(sr < 125) pts -= 10;
-  else if(sr < 150) pts += 0;
-  else if(sr < 175) pts += 10;
-  else if(sr < 200) pts += 20;
-  else if(sr < 250) pts += 40;
-  else if(sr < 300) pts += 60;
-  else pts += 80;
-
-}
-
-// Batting bonus
-if(runs > 200) pts += 200;
-else if(runs > 150) pts += 150;
-else if(runs > 125) pts += 125;
-else if(runs > 100) pts += 100;
-else if(runs > 75) pts += 75;
-else if(runs > 50) pts += 50;
-else if(runs > 25) pts += 25;
-
-return pts;
-
+  return J + K + M + N + O;
 }
 
 function calcBowl(wkts, maidens, runs, oversDec, eco) {
@@ -2396,20 +2639,18 @@ function buildCurrentInjuries(t) {
 }
 
 function normalizeScorecard(apiData){
-  if(apiData.innings) return apiData; // already correct
-
-  if(apiData.scorecard){
-    return {
-      ...apiData,
-      innings: apiData.scorecard.map(sc => ({
-        batting: sc.batting || [],
-        bowling: sc.bowling || [],
-        catching: sc.catching || []
-      }))
-    };
-  }
-
-  return apiData;
+  // GAS confirmed: API returns data.scorecard[]
+  // Each item has: inning (e.g. "India Inning 1"), batting[], bowling[], catching[]
+  const src = apiData.scorecard || apiData.innings || [];
+  return {
+    ...apiData,
+    innings: src.map(sc => ({
+      inning:   sc.inning  || sc.team || '',
+      batting:  sc.batting  || [],
+      bowling:  sc.bowling  || [],
+      catching: sc.catching || []
+    }))
+  };
 }
 function processInjury() {
   const teamId = document.getElementById('inj-team')?.value;
