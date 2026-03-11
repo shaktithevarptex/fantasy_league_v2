@@ -236,6 +236,168 @@ th { background: #f1f1f1; }
     color: #1a237e; /* Dark Blue */
     font-weight: bold; 
 }
+
+.preview-card{
+background:#1c1f2a;
+border:1px solid #2b2f3e;
+border-radius:10px;
+padding:16px;
+margin-bottom:14px;
+}
+
+.preview-card-header{
+display:flex;
+justify-content:space-between;
+margin-bottom:12px;
+}
+
+.team-owner{
+font-size:15px;
+font-weight:700;
+color:#fff;
+}
+
+.team-meta{
+font-size:12px;
+color:#9aa3b2;
+}
+
+.player-list{
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+
+.player-row{
+display:flex;
+justify-content:space-between;
+font-size:13px;
+color:#cfd6e6;
+}
+
+.player-price{
+font-size:12px;
+color:#f59e0b;
+}
+
+.corrected{
+color:#22c55e;
+}
+
+.preview-stat{
+margin-right:25px;
+}
+
+.stat-label{
+font-size:11px;
+color:#9aa3b2;
+}
+
+.stat-value{
+font-size:16px;
+font-weight:700;
+color:white;
+}
+
+.stat-value.small{
+font-size:12px;
+}
+
+.section-title{
+font-size:15px;
+font-weight:700;
+margin-bottom:12px;
+}
+
+.cap-info-box{
+background:#1c1f2a;
+border:1px solid #2b2f3e;
+padding:12px 14px;
+border-radius:8px;
+font-size:13px;
+color:#aab2c5;
+margin-bottom:18px;
+}
+
+.grid-2{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+}
+
+.mt{
+margin-top:14px;
+}
+
+.full{
+width:100%;
+}
+
+.form-label{
+font-size:12px;
+color:#aab2c5;
+margin-bottom:6px;
+display:block;
+}
+
+.meta-text{
+font-size:11px;
+color:#8a92a6;
+margin-top:4px;
+}
+
+.cap-history-row{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:10px 12px;
+background:#1c1f2a;
+border-radius:8px;
+margin-bottom:8px;
+}
+
+.cap-meta{
+font-size:11px;
+color:#8a92a6;
+margin-bottom:5px;
+}
+
+.cap-tags{
+display:flex;
+gap:8px;
+}
+
+.cap-tag{
+font-size:12px;
+font-weight:600;
+padding:4px 8px;
+border-radius:6px;
+}
+
+.cap-tag.captain{
+background:#2a1f08;
+color:#fbbf24;
+}
+
+.cap-tag.vc{
+background:#1d1b3a;
+color:#a78bfa;
+}
+
+.cap-delete{
+background:none;
+border:1px solid #2b2f3e;
+border-radius:6px;
+padding:4px 8px;
+cursor:pointer;
+color:#8a92a6;
+}
+
+.cap-delete:hover{
+color:#a80000;
+border-color:#ff6b6b;
+}
+
 @media(max-width:800px){
   .leaderboard-grid{
     grid-template-columns:1fr;
@@ -282,7 +444,7 @@ th { background: #f1f1f1; }
       <tr><td>Four</td><td>+1</td></tr>
       <tr><td>Six</td><td>+2</td></tr>
       <tr><td>Player Not Out</td><td>+10</td></tr>
-      
+      <tr><td>Players who are out for a 0 </td><td>-10</td></tr>
       <tr class="sub-header"><td colspan="2">Batting Milestones</td></tr>
       
       <tr><td>More than 25 Runs</td><td>+25</td></tr>
@@ -303,16 +465,16 @@ th { background: #f1f1f1; }
       <tbody>
       
       <tr><td>SR &lt; 50</td><td class="neg">-60</td></tr>
-      <tr><td>50 – 74.9</td><td class="neg">-40</td></tr>
-      <tr><td>75 – 99.9</td><td class="neg">-20</td></tr>
-      <tr><td>100 – 124.9</td><td class="neg">-10</td></tr>
+      <tr><td>SR &lt; 75</td><td class="neg">-40</td></tr>
+      <tr><td>SR &lt; 100</td><td class="neg">-20</td></tr>
+      <tr><td>SR &lt; 125</td><td class="neg">-10</td></tr>
       
       <tr><td>125 – 150</td><td>0</td></tr>
       
-      <tr><td>150 – 174.9</td><td>+10</td></tr>
-      <tr><td>175 – 199.9</td><td>+20</td></tr>
-      <tr><td>200 – 249.9</td><td>+40</td></tr>
-      <tr><td>250 – 299.9</td><td>+60</td></tr>
+      <tr><td>150 – 175</td><td>+10</td></tr>
+      <tr><td>175 – 200</td><td>+20</td></tr>
+      <tr><td>200 – 250</td><td>+40</td></tr>
+      <tr><td>250 – 300</td><td>+60</td></tr>
       
       <tr><td>300+</td><td>+80</td></tr>
       
@@ -630,15 +792,14 @@ th { background: #f1f1f1; }
     <div id="tab-leaderboard" class="fu">
 
       <div class="leaderboard-grid">
-    
-        <div id="top-performers" class="card" style="border:1px solid rgba(251,191,36,.25);display:none">
-          <div class="lbl" style="color:var(--warn)">🌟 Top Performers</div>
-          <div id="top-performers-list" style="margin-top:12px"></div>
-        </div>
-    
         <div class="card">
           <div class="lbl">Team Standings</div>
           <div id="standings-list"></div>
+        </div>
+
+        <div id="top-performers" class="card" style="border:1px solid rgba(251,191,36,.25);display:none">
+          <div class="lbl" style="color:var(--warn)">🌟 Top Performers</div>
+          <div id="top-performers-list" style="margin-top:12px"></div>
         </div>
     
       </div>
@@ -671,7 +832,7 @@ th { background: #f1f1f1; }
 // STATE
 // ═══════════════════════════════════════════════════
 const ADMIN_PASS = "26";
-const API_KEY = "fef2f0de-8f68-4fa0-aa15-62d3145cf76b"; // CricAPI key for fetching live scores (replace with your own if needed)
+const API_KEY = "813aaa00-d400-4d56-bca6-278761ed77fb"; // CricAPI key for fetching live scores (replace with your own if needed)
 
 let state = {
   user: null,       // "admin" | "user"
@@ -762,89 +923,161 @@ function weekKeyFromInput(val) {
 }
 
 function renderSubCaptain(t) {
-  const el = document.getElementById('sub-captain');
+  const el = document.getElementById("sub-captain");
+
   const wc = t.weeklyCaptains || {};
   const weeks = Object.keys(wc).sort().reverse();
+
   const todayKey = weekKey(new Date());
-  const todayWeekNum = String(getISOWeekNum(new Date())).padStart(2,'0');
+  const todayWeekNum = String(getISOWeekNum(new Date())).padStart(2, "0");
   const todayYear = new Date().getFullYear();
 
-  // Build history rows
-  const historyRows = weeks.flatMap(wk =>
-    Object.entries(wc[wk]||{}).map(([teamId, sel]) => {
-      const team = (t.teams||[]).find(x=>x.id===teamId);
-      const cap  = (team?.players||[]).find(p=>p.id===sel.captain);
-      const vc   = (team?.players||[]).find(p=>p.id===sel.vc);
-      if(!cap) return '';
-      return `
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surf1);border-radius:10px;margin-bottom:6px">
-          <div style="flex:1">
-            <div style="font-size:11px;color:var(--dim);margin-bottom:4px">
-              📅 ${escHtml(weekLabel(wk))} &nbsp;·&nbsp; 👤 ${escHtml(team?.owner||team?.name||'')}
+  const historyRows = weeks
+    .flatMap((wk) =>
+      Object.entries(wc[wk] || {}).map(([teamId, sel]) => {
+        const team = (t.teams || []).find((x) => x.id === teamId);
+        const cap = (team?.players || []).find((p) => p.id === sel.captain);
+        const vc = (team?.players || []).find((p) => p.id === sel.vc);
+        if (!cap) return "";
+
+        return `
+        <div class="cap-history-row">
+
+          <div class="cap-history-info">
+            <div class="cap-meta">
+              ${escHtml(weekLabel(wk))} · ${escHtml(
+          team?.owner || team?.name || ""
+        )}
             </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <span style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:8px;background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3)">
-                ⭐ C: ${escHtml(cap?.name||'')}
+
+            <div class="cap-tags">
+              <span class="cap-tag captain">
+                ⭐ C: ${escHtml(cap?.name || "")}
               </span>
-              <span style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:8px;background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3)">
-                🔰 VC: ${escHtml(vc?.name||sel.vc)}
+
+              <span class="cap-tag vc">
+                🔰 VC: ${escHtml(vc?.name || sel.vc)}
               </span>
             </div>
           </div>
-          <button onclick="deleteCaptainEntry('${escHtml(wk)}','${teamId}')"
-            style="background:none;border:1px solid var(--bdr);border-radius:8px;padding:5px 10px;cursor:pointer;color:var(--dim);font-size:13px"
-            title="Remove">✕</button>
+
+          <button class="cap-delete"
+            onclick="deleteCaptainEntry('${escHtml(wk)}','${teamId}')">
+            ✕
+          </button>
+
         </div>`;
-    })
-  ).join('');
+      })
+    )
+    .join("");
 
   el.innerHTML = `
-    <div class="card">
-      <div class="lbl">⭐ Weekly Captain & Vice-Captain</div>
-      <div style="background:var(--accd);border:1px solid var(--bdra);border-radius:10px;padding:12px 16px;margin:10px 0 18px;font-size:13px;color:var(--dim)">
-        Captain earns <b style="color:var(--acc)">2×</b> points · Vice-captain earns <b style="color:var(--acc)">1.5×</b> points —
-        applied only to matches played <b style="color:var(--txt)">within that Mon–Sun week</b>.
-        Admin sets this <b style="color:var(--txt)">once per week</b> per team.
-      </div>
+  
+  <div class="card">
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-        <div>
-          <div class="lbl fs-11">📅 Week (Mon – Sun)</div>
-          <input type="week" id="cap-week-input" class="inp" style="margin-top:6px"
-            value="${todayYear}-W${todayWeekNum}"
-            onchange="onCapWeekChange()"/>
-          <div id="cap-week-label" class="fs-11 txt-dim" style="margin-top:5px">${weekLabel(todayKey)}</div>
-        </div>
-        <div>
-          <div class="lbl fs-11">🏏 Fantasy Team</div>
-          <select class="inp" id="cap-team" style="margin-top:6px" onchange="updateCaptainPlayers()">
-            <option value="">— select team —</option>
-            ${(t.teams||[]).map(tm=>`<option value="${tm.id}">${escHtml(tm.name)}${tm.owner&&norm(tm.owner)!==norm(tm.name)?' ('+escHtml(tm.owner)+')':''}</option>`).join('')}
-          </select>
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
-        <div>
-          <div style="font-size:11px;font-weight:700;color:#fbbf24;margin-bottom:6px">⭐ Captain &nbsp;<span style="color:var(--dim);font-weight:400">(2× pts)</span></div>
-          <select class="inp" id="cap-player"><option value="">— pick team first —</option></select>
-        </div>
-        <div>
-          <div style="font-size:11px;font-weight:700;color:#a78bfa;margin-bottom:6px">🔰 Vice-Captain &nbsp;<span style="color:var(--dim);font-weight:400">(1.5× pts)</span></div>
-          <select class="inp" id="vc-player"><option value="">— pick team first —</option></select>
-        </div>
-      </div>
-
-      <button class="btn btn-success" onclick="saveCaptain()" style="width:100%;font-size:14px">
-        💾 Save Captain for this Week
-      </button>
+    <div class="section-title">
+      Weekly Captain & Vice-Captain
     </div>
 
-    ${weeks.length ? `
-      <div class="card" style="margin-top:16px">
-        <div class="lbl">📋 Captain History</div>
-        <div style="margin-top:12px">${historyRows || '<div class="txt-dim fs-12">No captains set yet.</div>'}</div>
-      </div>` : ''}
+    <div class="cap-info-box">
+      Captain earns <b>2×</b> points · Vice-captain earns <b>1.5×</b> points.
+      Applied only to matches played within that <b>Mon–Sun week</b>.
+    </div>
+
+    <div class="grid-2">
+
+      <div>
+        <label class="form-label">Week (Mon–Sun)</label>
+        <input 
+          type="week"
+          id="cap-week-input"
+          class="inp"
+          value="${todayYear}-W${todayWeekNum}"
+          onchange="onCapWeekChange()"
+        />
+
+        <div id="cap-week-label" class="meta-text">
+          ${weekLabel(todayKey)}
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label">Fantasy Team</label>
+
+        <select 
+          class="inp"
+          id="cap-team"
+          onchange="updateCaptainPlayers()"
+        >
+          <option value="">Select team</option>
+          ${(t.teams || [])
+            .map(
+              (tm) =>
+                `<option value="${tm.id}">
+                  ${escHtml(tm.name)}${
+                  tm.owner && norm(tm.owner) !== norm(tm.name)
+                    ? " (" + escHtml(tm.owner) + ")"
+                    : ""
+                }
+                </option>`
+            )
+            .join("")}
+        </select>
+
+      </div>
+
+    </div>
+
+    <div class="grid-2 mt">
+
+      <div>
+        <label class="form-label captain-label">
+          Captain (2× points)
+        </label>
+
+        <select class="inp" id="cap-player">
+          <option value="">Pick team first</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label vc-label">
+          Vice Captain (1.5× points)
+        </label>
+
+        <select class="inp" id="vc-player">
+          <option value="">Pick team first</option>
+        </select>
+      </div>
+
+    </div>
+
+    <button 
+      class="btn btn-success full mt"
+      onclick="saveCaptain()"
+    >
+      Save Captain for this Week
+    </button>
+
+  </div>
+
+  ${
+    weeks.length
+      ? `
+  <div class="card mt">
+
+    <div class="section-title">
+      Captain History
+    </div>
+
+    <div class="cap-history-list">
+      ${historyRows || `<div class="meta-text">No captains set yet</div>`}
+    </div>
+
+  </div>`
+      : ""
+  }
+
   `;
 }
 
@@ -1502,55 +1735,87 @@ function resolveSkip() { state.wiz.choices = {}; goPage('preview'); }
 // PREVIEW PAGE
 // ═══════════════════════════════════════════════════
 function renderPreview() {
-  const {parsedTeams, choices, tName, sid} = state.wiz;
-  const total = parsedTeams.reduce((s,t)=>s+t.players.length,0);
+  const { parsedTeams, choices, tName, sid } = state.wiz;
+  const total = parsedTeams.reduce((s, t) => s + t.players.length, 0);
 
-  document.getElementById('preview-summary').innerHTML = `
-    <div><div class="fs-11 txt-dim">TOURNAMENT</div><div class="fw-800 txt-main fs-15">${escHtml(tName)||'(no name)'}</div></div>
-    <div><div class="fs-11 txt-dim">OWNERS / TEAMS</div><div class="fw-800 txt-acc" style="font-size:22px">${parsedTeams.length}</div></div>
-    <div><div class="fs-11 txt-dim">PLAYERS</div><div class="fw-800 txt-acc" style="font-size:22px">${total}</div></div>
-    ${sid?`<div><div class="fs-11 txt-dim">SERIES ID</div><div class="fw-700 txt-ok fs-12" style="margin-top:2px">${escHtml(sid.slice(0,28))}…</div></div>`:''}
+  document.getElementById("preview-summary").innerHTML = `
+    <div class="preview-stat">
+      <div class="stat-label">Tournament</div>
+      <div class="stat-value">${escHtml(tName) || "(no name)"}</div>
+    </div>
+
+    <div class="preview-stat">
+      <div class="stat-label">Teams</div>
+      <div class="stat-value">${parsedTeams.length}</div>
+    </div>
+
+    <div class="preview-stat">
+      <div class="stat-label">Players</div>
+      <div class="stat-value">${total}</div>
+    </div>
+
+    ${
+      sid
+        ? `<div class="preview-stat">
+            <div class="stat-label">Series</div>
+            <div class="stat-value small">${escHtml(sid.slice(0, 28))}…</div>
+           </div>`
+        : ""
+    }
   `;
 
-  const grid = document.getElementById('preview-teams');
-  grid.innerHTML = '';
-  parsedTeams.forEach(team => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    const playerTags = team.players.map(p => {
-      const res = choices[p.name];
-      const cor = res && res !== p.name;
-      const displayName = res || p.name;
-      return `<span class="ptag ${cor?'corrected':''}" title="${p.price?p.price+'Cr':'No price'}">
-        ${escHtml(displayName)}
-        ${p.price?`<span style="font-size:9px;color:var(--warn);margin-left:3px">${p.price}Cr</span>`:''}
-        ${cor?'<span style="font-size:9px;color:var(--dim)"> ✓</span>':''}
-      </span>`;
-    }).join('');
+  const grid = document.getElementById("preview-teams");
+  grid.innerHTML = "";
+
+  parsedTeams.forEach((team) => {
+    const card = document.createElement("div");
+    card.className = "preview-card";
+
+    const playerList = team.players
+      .map((p) => {
+        const res = choices[p.name];
+        const corrected = res && res !== p.name;
+        const display = res || p.name;
+
+        return `
+        <div class="player-row">
+          <span class="player-name ${corrected ? "corrected" : ""}">
+            ${escHtml(display)}
+          </span>
+          ${
+            p.price
+              ? `<span class="player-price">${p.price}Cr</span>`
+              : ""
+          }
+        </div>`;
+      })
+      .join("");
+
     card.innerHTML = `
-      <div class="flex jc-between mb-12">
+      <div class="preview-card-header">
         <div>
-          <div class="fw-800 txt-main fs-15">${escHtml(team.owner||team.name)}</div>
-          <div style="margin-top:8px">
-          ${team.players.map(p => `
-          <div style="font-size:13px;color:#cbd5f5">• ${escHtml(p.name)}</div>
-          `).join("")}
-          </div>
-          <div class="fs-11 txt-dim" style="margin-top:2px">👤 Owner · ${team.players.length} players</div>
+          <div class="team-owner">${escHtml(team.owner || team.name)}</div>
+          <div class="team-meta">${team.players.length} players</div>
         </div>
-        <span class="badge" style="background:var(--accd);border:1px solid var(--bdra);color:var(--acc)">${team.players.length} players</span>
       </div>
-      <div>${playerTags}</div>
+
+      <div class="player-list">
+        ${playerList}
+      </div>
     `;
+
     grid.appendChild(card);
   });
 
-  const noNameWarn = document.getElementById('preview-no-name-warn');
-  const createBtn = document.getElementById('preview-create-btn');
-  if(!tName.trim()) {
-    noNameWarn.style.display='block'; createBtn.disabled=true;
+  const noNameWarn = document.getElementById("preview-no-name-warn");
+  const createBtn = document.getElementById("preview-create-btn");
+
+  if (!tName.trim()) {
+    noNameWarn.style.display = "block";
+    createBtn.disabled = true;
   } else {
-    noNameWarn.style.display='none'; createBtn.disabled=false;
+    noNameWarn.style.display = "none";
+    createBtn.disabled = false;
   }
 }
 
@@ -1862,8 +2127,10 @@ function showMatchDetail(matchId) {
   const t = getTournament();
   const match = (t.matches||[]).find(m=>m.id===matchId);
   if(!match) return;
+
   const el = document.getElementById('matches-content');
   const ti = match.teamInfo||[];
+
   const teamBanner = ti.length>=2 ? `
     <div style="display:flex;align-items:center;gap:16px;background:var(--accd);border:1px solid var(--bdra);border-radius:12px;padding:14px 18px;margin-bottom:16px;flex-wrap:wrap">
       ${ti.map(team=>`
@@ -1877,6 +2144,7 @@ function showMatchDetail(matchId) {
       `).join('<div style="flex:1;text-align:center;color:var(--dim);font-weight:900;font-size:18px">vs</div>')}
     </div>
   ` : '';
+
   let html = `
     <button class="btn btn-ghost mb-20" onclick="renderMatchesList(getTournament())">← Back</button>
     ${teamBanner}
@@ -1884,34 +2152,71 @@ function showMatchDetail(matchId) {
     ${match.venue?`<div class="txt-dim fs-12" style="margin-bottom:4px">📍 ${escHtml(match.venue)}</div>`:''}
     <div style="color:var(--ok);font-weight:600;font-size:13px;margin-bottom:20px">🏆 ${match.result||match.status||''}</div>
   `;
-  (t.teams||[]).forEach(team => {
-    const active = (team.players||[]).filter(p=>{
-      const mp=(p.matchPoints||{})[matchId];
-      return mp && ((mp.batting||0)+(mp.bowling||0)+(mp.fielding||0))!==0;
-    }).sort((a,b)=>{
-      const ta=(a.matchPoints[matchId]||{}),tb=(b.matchPoints[matchId]||{});
-      return ((tb.batting||0)+(tb.bowling||0)+(tb.fielding||0))-((ta.batting||0)+(ta.bowling||0)+(ta.fielding||0));
+
+  // ── Sort teams by highest total match points ──
+  const teamsSorted = (t.teams||[])
+    .map(team => {
+
+      const active = (team.players||[]).filter(p=>{
+        const mp=(p.matchPoints||{})[matchId];
+        return mp && ((mp.batting||0)+(mp.bowling||0)+(mp.fielding||0))!==0;
+      });
+
+      const total = active.reduce((sum,p)=>{
+        const mp=(p.matchPoints[matchId]||{});
+        return sum + (mp.batting||0)+(mp.bowling||0)+(mp.fielding||0);
+      },0);
+
+      return { team, active, total };
+
+    })
+    .filter(x => x.active.length)
+    .sort((a,b)=> b.total - a.total);
+
+  // ── Render teams ──
+  teamsSorted.forEach(obj => {
+
+    const team = obj.team;
+    const active = obj.active;
+
+    active.sort((a,b)=>{
+      const ta=(a.matchPoints[matchId]||{}),
+            tb=(b.matchPoints[matchId]||{});
+      return ((tb.batting||0)+(tb.bowling||0)+(tb.fielding||0)) -
+             ((ta.batting||0)+(ta.bowling||0)+(ta.fielding||0));
     });
-    if(!active.length) return;
-    html += `<div class="card mb-14"><div class="lbl txt-acc">${escHtml(team.name)}</div>`;
+
+    html += `
+      <div class="card mb-14">
+        <div class="lbl txt-acc">
+          ${escHtml(team.name)} — ${obj.total} pts
+        </div>
+    `;
+
     active.forEach(p => {
+
       const mp=(p.matchPoints[matchId]||{});
       const tot=(mp.batting||0)+(mp.bowling||0)+(mp.fielding||0);
+
       html += `
         <div class="flex gap-10" style="padding:8px 0;border-bottom:1px solid var(--bdr)">
           <div class="flex-1">
             <div class="fw-600 txt-main">${escHtml(p.name)}</div>
-            <div class="fs-11 txt-dim">🏏 Bat ${mp.batting||0} · ⚾ Bowl ${mp.bowling||0} · 🧤 Field ${mp.fielding||0}</div>
+            <div class="fs-11 txt-dim">
+              🏏 Bat ${mp.batting||0} · ⚾ Bowl ${mp.bowling||0} · 🧤 Field ${mp.fielding||0}
+            </div>
           </div>
           <span class="txt-acc fw-700" style="font-size:15px">${tot}</span>
         </div>
       `;
+
     });
-    html += '</div>';
+
+    html += `</div>`;
   });
+
   el.innerHTML = html;
 }
-
 // ── Manage Tab ────────────────────────────────────
 let currentSubTab = 'upload';
 
@@ -2532,9 +2837,9 @@ function calcBat(runs, balls, fours, sixes, sr, duck, notOut=false) {
   if(sr >= 175) L += 10;
   if(sr >= 200) L += 20;
   if(sr >= 250) L += 20;
-  if(sr >= 300) L += 20;
-  if(sr >= 350) L += 20;
-  if(sr >= 400) L += 20;
+  if(sr == 300 && sr<=350) L += 80;
+  
+  if(sr > 350) L += 100;
 
   // M — SR bonus only if 25+ balls faced
   const M = balls >= 25 ? L : 0;
@@ -2567,7 +2872,7 @@ pts += maidens * 40;
 // Economy (min 2 overs)
 if(oversDec >= 2){
 
-  if(eco < 1) pts += 120;
+  if(eco < 1) pts += 100;
   else if(eco < 2) pts += 80;
   else if(eco < 4) pts += 40;
   else if(eco < 6) pts += 20;
