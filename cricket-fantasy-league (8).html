@@ -818,11 +818,13 @@ border-color:#ff6b6b;
         <button class="tab-btn" id="sub-btn-scores" onclick="switchSubTab('scores')" style="flex:1">🏏 Fetch Scores</button>
         <button class="tab-btn" id="sub-btn-captain" onclick="switchSubTab('captain')" style="flex:1">⭐ Captain</button>
         <button class="tab-btn" id="sub-btn-injury" onclick="switchSubTab('injury')" style="flex:1">🩹 Injury</button>
+        <button class="tab-btn" id="sub-btn-manual" onclick="switchSubTab('manual')" style="flex:1">🎯 Manual Points</button>
       </div>
       <div id="sub-upload"></div>
       <div id="sub-scores" style="display:none"></div>
       <div id="sub-captain" style="display:none"></div>
       <div id="sub-injury" style="display:none"></div>
+      <div id="sub-manual" style="display:none"></div>
     </div>
   </div>
 </div>
@@ -2115,7 +2117,33 @@ function renderMatchesList(t) {
             ${m.venue?`<div class="txt-dim" style="font-size:11px;margin-top:3px">📍 ${escHtml(m.venue)}</div>`:''}
             <div class="txt-dim" style="font-size:11px;margin-top:2px">📅 ${m.date||''}</div>
           </div>
-          <span class="badge" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.35);color:var(--ok);flex-shrink:0">completed</span>
+          <span class="badge"
+style="
+background:${
+m.status==='completed'
+?'rgba(52,211,153,.15)'
+:m.status==='live'
+?'rgba(251,191,36,.15)'
+:'rgba(56,189,248,.15)'
+};
+border:1px solid ${
+m.status==='completed'
+?'rgba(52,211,153,.35)'
+:m.status==='live'
+?'rgba(251,191,36,.35)'
+:'rgba(56,189,248,.35)'
+};
+color:${
+m.status==='completed'
+?'#34d399'
+:m.status==='live'
+?'#fbbf24'
+:'#38bdf8'
+};
+">
+${m.status}
+</span>
+
         </div>
         ${m.result?`<div style="color:var(--ok);font-size:12px;font-weight:600;margin-top:8px;padding-top:8px;border-top:1px solid var(--bdr)">🏆 ${escHtml(m.result)}</div>`:''}
       </div>
@@ -2223,13 +2251,178 @@ let currentSubTab = 'upload';
 function switchSubTab(sub) {
   currentSubTab = sub;
 
-  ['upload','scores','captain','injury'].forEach(k => {
+  const t = getTournament();   // get tournament data
+
+  ['upload','scores','captain','injury','manual'].forEach(k => {
     const el = document.getElementById('sub-'+k);
     const btn = document.getElementById('sub-btn-'+k);
 
     if(el) el.style.display = k===sub ? 'block' : 'none';
     if(btn) btn.classList.toggle('active', k===sub);
   });
+
+  // render tab content
+  if(sub === 'manual') renderSubManual(t);
+}
+
+function renderSubManual(t){
+
+const el=document.getElementById("sub-manual");
+
+const matches=(t.matches||[])
+.filter(m=>m.status==="completed")
+.map(m=>`<option value="${m.id}">${m.name}</option>`).join("");
+
+const players=(t.teams||[])
+.flatMap(tm=>tm.players||[])
+.map(p=>`<option value="${p.id}">${p.name}</option>`).join("");
+
+el.innerHTML=`
+
+<div class="card">
+
+<div class="section-title">🎯 Match Bonus Points</div>
+
+<div class="grid-2">
+
+<div>
+<label class="form-label">Match</label>
+<select class="inp" id="manual-match">${matches}</select>
+</div>
+
+<div>
+<label class="form-label">Player</label>
+<select class="inp" id="manual-player">${players}</select>
+</div>
+
+</div>
+
+<div class="mt">
+
+<label class="form-label">Bonus Type</label>
+
+<select class="inp" id="manual-type">
+
+<option value="hatrick">Hat-trick</option>
+<option value="mom">Man of the Match</option>
+<option value="6s">6 Sixes in Over</option>
+<option value="4s">6 Fours in Over</option>
+<option value="bowled">Bowled/LBW Bonus</option>
+<option value="runout">Runout by Bowler</option>
+<option value="maiden">Maiden Over</option>
+
+</select>
+
+</div>
+
+<button class="btn btn-success full mt"
+onclick="applyManualPoints()">Apply Points</button>
+
+</div>
+
+
+<div class="card mt">
+
+<div class="section-title">🏆 Tournament Awards</div>
+
+<select class="inp" id="award-player">
+${players}
+</select>
+
+<select class="inp mt" id="award-type">
+
+<option value="purple">Purple Cap</option>
+<option value="orange">Orange Cap</option>
+<option value="pot">Player of Tournament</option>
+<option value="emerging">Emerging Player</option>
+
+</select>
+
+<button class="btn btn-primary full mt"
+onclick="applyTournamentAward()">Give Award</button>
+
+</div>
+
+`;
+
+}
+
+function applyManualPoints(){
+
+const t=getTournament();
+
+const matchId=document.getElementById("manual-match").value;
+const playerId=document.getElementById("manual-player").value;
+const type=document.getElementById("manual-type").value;
+
+const bonus={
+hatrick:100,
+mom:100,
+"6s":100,
+"4s":50,
+bowled:10,
+runout:10,
+maiden:40
+}[type]||0;
+
+const updated={...t,
+teams:t.teams.map(tm=>({
+...tm,
+players:tm.players.map(p=>{
+if(p.id!==playerId) return p;
+
+const mp={...(p.matchPoints||{})};
+
+const cur=mp[matchId]||{batting:0,bowling:0,fielding:0};
+
+cur.bowling+=bonus;
+
+mp[matchId]=cur;
+
+return{
+...p,
+matchPoints:mp,
+totalPoints:(p.totalPoints||0)+bonus
+};
+
+})
+}))
+};
+
+updateTournament(updated);
+
+alert("Bonus applied!");
+
+}
+
+function applyTournamentAward(){
+
+const t=getTournament();
+
+const playerId=document.getElementById("award-player").value;
+
+const type=document.getElementById("award-type").value;
+
+const bonus=200;
+
+const updated={...t,
+teams:t.teams.map(tm=>({
+...tm,
+players:tm.players.map(p=>{
+if(p.id!==playerId) return p;
+
+return{
+...p,
+totalPoints:(p.totalPoints||0)+bonus
+};
+})
+}))
+};
+
+updateTournament(updated);
+
+alert("Award applied!");
+
 }
 
 // saveCaptain moved into renderSubCaptain block
@@ -2531,154 +2724,245 @@ async function populateTopPerformerCountries() {
 }
 
 async function fetchScores() {
-  const sid = (document.getElementById('scores-sid')?.value||'').trim();
+
+  const sid = (document.getElementById('scores-sid')?.value || '').trim();
   const log = document.getElementById('scores-log');
-  if(log){ log.innerHTML=''; log.style.display='block'; }
-  if(getHits() >= 95){ addScoreLog('❌ API limit near (95+). Try tomorrow.','var(--err)'); return; }
-  if(!sid){ addScoreLog('⚠️ Enter a Series ID.','var(--warn)'); return; }
+
+  if(log){
+    log.innerHTML='';
+    log.style.display='block';
+  }
 
   const t = getTournament();
-  const alreadyDone = new Set((t.matches||[]).map(m => m.id));
-
-  // ── STEP 1: 1 hit to get series info + full match list ──
-  addScoreLog('📡 Fetching series info... (1 API hit)');
-  let seriesData;
-  try {
-    seriesData = await cricFetch(
-      `https://api.cricapi.com/v1/series_info?apikey=${API_KEY}&id=${sid}&offset=0`
-    );
-    bumpHits(1);
-  } catch(err) {
-    addScoreLog('❌ ' + err.message, 'var(--err)');
+  if(!t){
+    addScoreLog('❌ No tournament selected.','var(--err)');
     return;
   }
 
-  if(seriesData?.status !== 'success') {
-    addScoreLog('❌ ' + (seriesData?.reason || 'Series not found — check Series ID'), 'var(--err)');
+  if(!Array.isArray(t.matches)){
+    t.matches=[];
+  }
+
+  if(getHits() >= 95){
+    addScoreLog('❌ API limit near (95+). Try tomorrow.','var(--err)');
+    return;
+  }
+
+  if(!sid){
+    addScoreLog('⚠️ Enter a Series ID.','var(--warn)');
+    return;
+  }
+
+  const alreadyDone = new Set((t.matches||[]).map(m=>m.id));
+
+  // ───── STEP 1: SERIES INFO ─────
+
+  addScoreLog('📡 Fetching series info... (1 API hit)');
+
+  let seriesData;
+
+  try{
+
+    seriesData = await cricFetch(
+      `https://api.cricapi.com/v1/series_info?apikey=${API_KEY}&id=${sid}&offset=0`
+    );
+
+    bumpHits(1);
+
+  }catch(err){
+    addScoreLog('❌ '+err.message,'var(--err)');
+    return;
+  }
+
+  if(seriesData?.status!=='success'){
+    addScoreLog('❌ '+(seriesData?.reason||'Series not found'),'var(--err)');
     return;
   }
 
   const allMatches = seriesData.data?.matchList || [];
-  const seriesName  = seriesData.data?.info?.name || sid;
-  addScoreLog(`✅ "${seriesName}" — ${allMatches.length} total matches`, 'var(--ok)');
+  const seriesName = seriesData.data?.info?.name || sid;
 
-  // ── Store ALL match metadata (results + teamInfo) from series_info ──
-  // This costs 0 extra hits — series_info already contains all of this!
-  let updated = { ...t, teams: t.teams.map(x=>({...x, players:[...x.players]})) };
-  let metaAdded = 0;
-  allMatches.forEach(m => {
-    if(alreadyDone.has(m.id)) return;
-    const s = (m.status||'').toLowerCase();
-    const isDone = m.matchEnded || s.includes('won') || s.includes('draw') ||
-                   s.includes('tied') || s.includes('abandoned');
-    if(isDone) {
-      updated = recordMatchOnly(updated, m);
-      metaAdded++;
-    }
+  addScoreLog(`✅ "${seriesName}" — ${allMatches.length} matches found`,'var(--ok)');
+
+  let updated = {
+    ...t,
+    teams:(t.teams||[]).map(x=>({...x,players:[...(x.players||[])]}))
+  };
+
+  // ───── MATCH STATUS COUNTERS ─────
+
+  let upcoming = 0;
+  let live = 0;
+  let completed = 0;
+
+  allMatches.forEach(m=>{
+    if(m.matchEnded) completed++;
+    else if(m.matchStarted) live++;
+    else upcoming++;
   });
-  if(metaAdded > 0) {
-    addScoreLog(`📋 ${metaAdded} new completed match(es) recorded (results + team flags)`, 'var(--acc)');
+
+  addScoreLog(`📅 Upcoming: ${upcoming} · 🔴 Live: ${live} · ✅ Finished: ${completed}`,'var(--dim)');
+
+  // ───── RECORD COMPLETED MATCH META ─────
+
+  let metaAdded=0;
+
+  allMatches.forEach(m=>{
+
+if(alreadyDone.has(m.id)) return;
+
+let status = "upcoming";
+
+if(m.matchEnded) status = "completed";
+else if(m.matchStarted) status = "live";
+
+updated.matches.push({
+  id: m.id,
+  name: m.name,
+  date: m.date,
+  venue: m.venue || "",
+  status: status,
+  result: m.status || "",
+  teamInfo: m.teamInfo || [],
+  teams: m.teams || []
+});
+
+});
+
+  if(metaAdded){
+    addScoreLog(`📋 ${metaAdded} completed match results recorded`,'var(--acc)');
   }
 
-  // ── STEP 2: Fetch scorecards ONLY for relevant unscored matches ──
-  // Match IDs already scored (have player points attributed)
+  // ───── FIND MATCHES THAT NEED SCORING ─────
+
   const scoredMatchIds = new Set(
-    (t.teams||[]).flatMap(tm =>
-      (tm.players||[]).flatMap(p => Object.keys(p.matchPoints||{}))
+    (t.teams||[]).flatMap(tm=>
+      (tm.players||[]).flatMap(p=>Object.keys(p.matchPoints||{}))
     )
   );
 
-  // All team/player names in our fantasy league (normalised for matching)
-  const ourPlayerNames = new Set(
-    (t.teams||[]).flatMap(tm => (tm.players||[]).map(p => norm(p.name)))
-  );
+  const needScoring = allMatches.filter(m=>{
 
-  // A match is relevant if ANY of the playing teams could contain our players.
-  // We check match.teams[] (e.g. ["India","South Africa"]) against player names —
-  // any player name that contains a team's country word counts.
-  // Simpler & reliable: if fantasyEnabled=true the API already flags it.
-  // Fall back to checking all completed unscored matches.
-  const isCompleted = m => {
-    const s = (m.status||'').toLowerCase();
-    return m.matchEnded || s.includes('won') || s.includes('draw') || s.includes('tied');
-  };
+    if(scoredMatchIds.has(m.id)) return false;
 
-  const needScoring = allMatches.filter(m => {
-    if(scoredMatchIds.has(m.id)) return false;   // already scored
-    if(!isCompleted(m)) return false;              // not finished yet
-    return true;                                   // all completed unscored matches
-  }).sort((a,b) => new Date(b.date) - new Date(a.date)); // newest first
+    if(!m.matchEnded) return false;
 
-  if(!needScoring.length) {
-    addScoreLog('✅ All completed matches already scored! Total hits: 1', 'var(--ok)');
+    return true;
+
+  }).sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+  // ───── NO MATCHES READY ─────
+
+  if(!needScoring.length){
+
+    if(completed===0){
+      addScoreLog('ℹ️ No matches finished yet. Scores will appear after matches end.','var(--dim)');
+    }else{
+      addScoreLog('✅ All completed matches already scored.','var(--ok)');
+    }
+
     updateTournament(updated);
     renderLeaderboard(getTournament());
     renderMatchesList(getTournament());
+
     return;
   }
 
-  // Cap: max 10 per sync to protect daily limit.
-  // On a 100-match series first sync = 11 hits total (1 + 10).
-  // Run again to score more. Each subsequent sync = 1 + new_completed hits.
-  const remaining = Math.min(94 - getHits(), 10);
-  const toScore   = needScoring.slice(0, remaining);
-  const skipped   = needScoring.length - toScore.length;
-  addScoreLog(
-    `🏏 Scoring ${toScore.length} match(es)` +
-    (skipped > 0 ? ` · ${skipped} deferred (sync again to get them)` : ''),
-    'var(--acc)'
-  );
+  // ───── LIMIT API HITS ─────
 
-  let scorecardHits = 0;
-  for(const match of toScore) {
-    if(getHits() >= 94) { addScoreLog('⚠️ Hit limit close — stopping.','var(--warn)'); break; }
+  const remaining = Math.min(94-getHits(),10);
+
+  const toScore = needScoring.slice(0,remaining);
+
+  const skipped = needScoring.length - toScore.length;
+
+  addScoreLog(`🏏 Scoring ${toScore.length} completed match(es)`,'var(--acc)');
+
+  // ───── FETCH SCORECARDS ─────
+
+  let scorecardHits=0;
+
+  for(const match of toScore){
+
+    if(getHits()>=94){
+      addScoreLog('⚠️ Hit limit close — stopping.','var(--warn)');
+      break;
+    }
+
     const label = match.name.split(',')[0];
-    addScoreLog(`  ⬇️ ${label}...`);
-    try {
+
+    addScoreLog(`⬇️ ${label}...`);
+
+    try{
+
       const sc = await cricFetch(
         `https://api.cricapi.com/v1/match_scorecard?apikey=${API_KEY}&id=${match.id}`
       );
+
       scorecardHits++;
       bumpHits(1);
-      if(sc?.status === 'success' && sc.data) {
-        const ptsBefore = updated.teams.flatMap(t=>t.players).reduce((s,p)=>s+(p.totalPoints||0),0);
+
+      if(sc?.status==='success' && sc.data){
+
+        const ptsBefore = updated.teams.flatMap(t=>t.players)
+          .reduce((s,p)=>s+(p.totalPoints||0),0);
+
         const normalized = normalizeScorecard(sc.data);
-        updated = applyMatch(updated, match, normalized);
-        const ptsAfter = updated.teams.flatMap(t=>t.players).reduce((s,p)=>s+(p.totalPoints||0),0);
-        const newPts = ptsAfter - ptsBefore;
-        // Use normalized innings (covers both scorecard[] and innings[] formats)
+
+        updated = applyMatch(updated,match,normalized);
+
+        const ptsAfter = updated.teams.flatMap(t=>t.players)
+          .reduce((s,p)=>s+(p.totalPoints||0),0);
+
+        const newPts = ptsAfter-ptsBefore;
+
         const innings = normalized.innings||[];
-        if(!innings.length) {
-          addScoreLog(`  ⚠️ Scorecard has 0 innings — API may not have data yet`, 'var(--warn)');
-        } else {
-          const batRows   = innings.reduce((s,i)=>s+(i.batting||[]).length,0);
-          const bowlRows  = innings.reduce((s,i)=>s+(i.bowling||[]).length,0);
+
+        if(!innings.length){
+
+          addScoreLog('⚠️ Scorecard exists but innings not ready yet','var(--warn)');
+
+        }else{
+
+          const batRows = innings.reduce((s,i)=>s+(i.batting||[]).length,0);
+          const bowlRows = innings.reduce((s,i)=>s+(i.bowling||[]).length,0);
           const fieldRows = innings.reduce((s,i)=>s+(i.catching||[]).length,0);
-          addScoreLog(`  ✅ ${innings.length} innings · ${batRows} bat · ${bowlRows} bowl · ${fieldRows} field · +${newPts} pts`, 'var(--ok)');
+
+          addScoreLog(
+            `✅ ${innings.length} innings · ${batRows} bat · ${bowlRows} bowl · ${fieldRows} field · +${newPts} pts`,
+            'var(--ok)'
+          );
+
         }
-      } else if(sc?.status === 'failure') {
-        addScoreLog(`  ❌ API: ${sc.reason||'unknown error'}`, 'var(--err)');
-      } else {
-        addScoreLog(`  ℹ️ No innings data yet (match may still be processing)`, 'var(--dim)');
+
       }
-    } catch(e) {
+
+    }catch(e){
+
       scorecardHits++;
       bumpHits(1);
-      addScoreLog(`  ❌ ${e.message}`, 'var(--err)');
+
+      addScoreLog(`❌ ${e.message}`,'var(--err)');
+
     }
+
   }
 
+  // ───── UPDATE UI ─────
+
   updateTournament(updated);
+
   renderLeaderboard(getTournament());
   renderMatchesList(getTournament());
+
   const totalHits = 1 + scorecardHits;
-  addScoreLog(
-    `✅ Done! Total hits this sync: ${totalHits} | Today's total: ${getHits()}/100`,
-    'var(--ok)'
-  );
-  if(skipped > 0) {
-    addScoreLog(`ℹ️ Sync again to score remaining ${skipped} match(es).`, 'var(--dim)');
+
+  addScoreLog(`✅ Sync finished · Hits used: ${totalHits} · Today: ${getHits()}/100`,'var(--ok)');
+
+  if(skipped>0){
+    addScoreLog(`ℹ️ Sync again to score ${skipped} remaining match(es)`,'var(--dim)');
   }
+
 }
 
 function recordMatchOnly(tournament, matchInfo) {
