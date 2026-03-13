@@ -1,4 +1,6 @@
 
+import{renderAdminHome} from '../pages/adminhome.js'
+import { renderUserHome } from '../pages/userhome.js';
 
 export function renderPage(page) {
     if(page==='user-home') renderUserHome();

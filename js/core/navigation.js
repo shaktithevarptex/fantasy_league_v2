@@ -1,6 +1,7 @@
 import { state } from "./state.js"
 import { renderPage } from "../render/renderPage.js"
 import { updateApiBadge } from '../tournamentcontroller.js'
+import { getTournament } from "../tournamentcontroller.js";
 // ═══════════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════════

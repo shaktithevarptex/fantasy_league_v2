@@ -1,7 +1,7 @@
 import { loadTournamentsFromServer } from './js/api/api.js'
 import { renderUserHome } from './js/pages/userhome.js'
 import { state } from './js/core/state.js'
-import { getTournament,playerLogin,showAdminForm,backToChoose,doAdminLogin} from './js/tournamentcontroller.js'
+import { openModal,getTournament,playerLogin,showAdminForm,backToChoose,doAdminLogin} from './js/tournamentcontroller.js'
 import { logout,goPage } from './js/core/navigation.js'
  
 

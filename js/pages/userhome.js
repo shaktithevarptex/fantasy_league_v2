@@ -1,3 +1,5 @@
+
+
 // ── User Home ─────────────────────────────────────
 export function renderUserHome() {
   const grid = document.getElementById('user-tournaments-grid');
