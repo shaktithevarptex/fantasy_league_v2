@@ -70,7 +70,7 @@ const template = `
 </table>
 `;
 
-function createPayload() {
+export function createPayload() {
   const response = pm.response.json();
   const data = response.data;
   
@@ -85,7 +85,7 @@ function createPayload() {
   };
   
   // Innings scores
-  const innings = data.score ? data.score.map(function(s) {
+  const innings = data.score ? data.score.map(export function(s) {
     return {
       inning: s.inning || 'N/A',
       r: s.r !== undefined ? s.r : 'N/A',
@@ -97,9 +97,9 @@ function createPayload() {
   // Top batsmen
   var allBatsmen = [];
   if (data.scorecard) {
-    data.scorecard.forEach(function(inningData) {
+    data.scorecard.forEach(export function(inningData) {
       if (inningData.batting) {
-        inningData.batting.forEach(function(b) {
+        inningData.batting.forEach(export function(b) {
           allBatsmen.push({
             name: b.batsman ? b.batsman.name : 'N/A',
             inning: inningData.inning || 'N/A',
@@ -113,8 +113,8 @@ function createPayload() {
       }
     });
   }
-  allBatsmen.sort(function(a, b) { return b.runs - a.runs; });
-  var topBatsmen = allBatsmen.slice(0, 10).map(function(b, i) {
+  allBatsmen.sort(export function(a, b) { return b.runs - a.runs; });
+  var topBatsmen = allBatsmen.slice(0, 10).map(export function(b, i) {
     b.rank = i + 1;
     return b;
   });
@@ -122,7 +122,7 @@ function createPayload() {
   // ========== FANTASY POINTS CALCULATION ==========
   var playerStats = {}; // Aggregate by player name
 
-  function getOrCreatePlayer(name) {
+  export function getOrCreatePlayer(name) {
     if (!playerStats[name]) {
       playerStats[name] = {
         name: name,
@@ -157,7 +157,7 @@ function createPayload() {
   };
 
   // SR slabs for batting
-  function getSRPoints(sr, runs, balls) {
+  export function getSRPoints(sr, runs, balls) {
     // Condition: runs > 20 OR balls >= 10
     if (!(runs > 20 || balls >= 10)) return 0;
     
@@ -176,7 +176,7 @@ function createPayload() {
   }
 
   // Milestone bonus
-  function getMilestoneBonus(runs) {
+  export function getMilestoneBonus(runs) {
     var bonus = 0;
     var milestones = [25, 50, 75, 100, 125, 150, 200];
     for (var i = 0; i < milestones.length; i++) {
@@ -188,7 +188,7 @@ function createPayload() {
   }
 
   // Economy slabs for bowling (overs > 2)
-  function getEcoPoints(eco, overs) {
+  export function getEcoPoints(eco, overs) {
     if (overs <= 2) return 0;
     
     if (eco < 1) return 100;
@@ -206,10 +206,10 @@ function createPayload() {
 
   // Process scorecard
   if (data.scorecard) {
-    data.scorecard.forEach(function(inningData) {
+    data.scorecard.forEach(export function(inningData) {
       // Batting
       if (inningData.batting) {
-        inningData.batting.forEach(function(b) {
+        inningData.batting.forEach(export function(b) {
           var playerName = b.batsman ? b.batsman.name : null;
           if (!playerName) return;
           
@@ -240,7 +240,7 @@ function createPayload() {
 
       // Bowling
       if (inningData.bowling) {
-        inningData.bowling.forEach(function(bw) {
+        inningData.bowling.forEach(export function(bw) {
           var playerName = bw.bowler ? bw.bowler.name : null;
           if (!playerName) return;
 
@@ -265,7 +265,7 @@ function createPayload() {
 
       // Fielding
       if (inningData.catching) {
-        inningData.catching.forEach(function(c) {
+        inningData.catching.forEach(export function(c) {
           var playerName = c.catcher ? c.catcher.name : null;
           if (!playerName) return;
 
@@ -294,10 +294,10 @@ function createPayload() {
   }
 
   // Sort by total points descending
-  fantasyPlayers.sort(function(a, b) { return b.totalPts - a.totalPts; });
+  fantasyPlayers.sort(export function(a, b) { return b.totalPts - a.totalPts; });
 
   // Add rank
-  fantasyPlayers = fantasyPlayers.map(function(p, i) {
+  fantasyPlayers = fantasyPlayers.map(export function(p, i) {
     p.rank = i + 1;
     return p;
   });
@@ -422,7 +422,7 @@ const template2 = `
 </table>
 `;
 
-function createPayload() {
+export function createPayload() {
   const data = pm.response.json().data;
   const playerStats = {};
 
