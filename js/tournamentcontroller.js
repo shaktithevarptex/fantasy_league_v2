@@ -422,9 +422,4 @@ export function recordMatchOnly(tournament, matchInfo) {
 // ═══════════════════════════════════════════════════
 document.getElementById('page-login').classList.add('active');
 
-loadTournamentsFromServer().then(()=>{
-    // render current page if needed
-    if(state.page === 'user-home') renderUserHome();
-    if(state.page === 'admin-home') renderAdminHome();
-  });
 

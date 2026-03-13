@@ -6,7 +6,7 @@ export function escAttr(s){ return String(s||'').replace(/'/g,'&#39;').replace(/
 export function escId(s){ return String(s||'').replace(/[^a-zA-Z0-9]/g,'_'); }
 export function makeId(prefix){ return prefix+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,6); }
 
-const norm = s => (s||"").toLowerCase().replace(/[^a-z]/g,"");
+export const norm = s => (s||"").toLowerCase().replace(/[^a-z]/g,"");
 
 // ── Weekly helpers ────────────────────────────────
 export function getWeekMonday(date) {

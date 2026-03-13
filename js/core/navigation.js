@@ -1,6 +1,6 @@
 import { state } from "./state.js"
 import { renderPage } from "../render/renderPage.js"
-
+import { updateApiBadge } from '../tournamentcontroller.js'
 // ═══════════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════════
@@ -74,7 +74,3 @@ export function logout() {
   state.user = null;
   goPage('login');
 }
-
-export export function goPage(){}
-export export function navBack(){}
-export export function logout(){}

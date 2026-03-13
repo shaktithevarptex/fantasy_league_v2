@@ -1,3 +1,6 @@
+import { weekKey } from '../../js/core/utils.js'
+import { norm, escHtml } from '../../js/core/utils.js'
+
 // ── Leaderboard ───────────────────────────────────
 export function renderLeaderboard(t) {
   const teams = t.teams||[];
@@ -5,7 +8,7 @@ export function renderLeaderboard(t) {
   // Captain/VC bonus applies ONLY to match points earned in that Mon-Sun week.
   // Each match has a date; we look up which week it falls in, then check
   // whether the player was C/VC for that week and apply 2× or 1.5× per match.
-  export function playerTotalWithCap(player) {
+  function playerTotalWithCap(player) {
     const wc = t.weeklyCaptains || {};
     const matches = t.matches || [];
     // Map matchId → weekKey (Monday date)
@@ -32,7 +35,7 @@ export function renderLeaderboard(t) {
   }
 
   // Captain badge: latest week where player is C or VC
-  export function captainBadge(playerId) {
+   function captainBadge(playerId) {
     const wc = t.weeklyCaptains || {};
     const sortedWks = Object.keys(wc).sort().reverse();
     for(const wk of sortedWks) {
